@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/padding_size"
-        android:text="@sample/posts.json/data/published"
+        tools:text="@sample/posts.json/data/published"
         app:layout_constraintBottom_toBottomOf="@id/avatar"
         app:layout_constraintStart_toEndOf="@id/avatar"
         app:layout_constraintTop_toBottomOf="@id/author" />
@@ -50,7 +50,7 @@
         android:contentDescription="@string/description_post_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/baseline_more_vert_24" />
+        tools:srcCompat="@drawable/baseline_more_vert_24" />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrierTop"
@@ -63,7 +63,7 @@
         android:id="@+id/content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@sample/posts.json/data/content"
+        tools:text="@sample/posts.json/data/content"
         app:layout_constraintStart_toStartOf="@id/avatar"
         app:layout_constraintTop_toBottomOf="@id/barrierTop"
         tools:layout_editor_absoluteX="16dp" />
@@ -90,7 +90,7 @@
         android:id="@+id/countLikes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/countLikes"
+        tools:text="@string/countLikes"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/likes"
@@ -113,7 +113,7 @@
         android:id="@+id/countReposts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/countLikes"
+        tools:text="@string/countLikes"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/repostButton"
