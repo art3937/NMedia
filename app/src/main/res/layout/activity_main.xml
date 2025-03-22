@@ -5,7 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/padding_size"
+    android:paddingTop="30dp"
+    android:paddingHorizontal="@dimen/padding_size"
     tools:context=".MainActivity">
 
 
@@ -17,7 +18,7 @@
         app:layout_constraintBottom_toBottomOf="@id/barrierTop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@sample/posts_avatars" />
+        app:srcCompat="@drawable/post_avatar_drawable" />
 
     <TextView
         android:id="@+id/author"
@@ -63,10 +64,10 @@
         android:id="@+id/content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="@sample/posts.json/data/content"
-        app:layout_constraintStart_toStartOf="@id/avatar"
+        android:layout_marginTop="@dimen/padding_size"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barrierTop"
-        tools:layout_editor_absoluteX="16dp" />
+        tools:text="@sample/posts.json/data/content" />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrierBottom"
@@ -79,12 +80,11 @@
         android:id="@+id/likes"
         android:layout_width="@dimen/avatar_size"
         android:layout_height="@dimen/avatar_size"
-        android:layout_marginTop="@dimen/padding_size"
         android:background="@android:color/transparent"
         android:contentDescription="@string/description_post_likes"
-        app:layout_constraintStart_toStartOf="@id/avatar"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/barrierBottom"
-        tools:srcCompat="@drawable/baseline_favorite_border_24" />
+        app:srcCompat="@drawable/baseline_favorite_border_24" />
 
     <TextView
         android:id="@+id/countLikes"
@@ -107,7 +107,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/likes"
         app:layout_constraintStart_toEndOf="@id/countLikes"
         app:layout_constraintTop_toTopOf="@+id/likes"
-        tools:srcCompat="@drawable/baseline_share_24" />
+        app:srcCompat="@drawable/baseline_share_24" />
 
     <TextView
         android:id="@+id/countReposts"
@@ -129,11 +129,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintEnd_toStartOf="@id/countView"
         app:layout_constraintTop_toTopOf="@id/likes"
-        tools:srcCompat="@drawable/baseline_remove_red_eye_24" />
+        app:srcCompat="@drawable/baseline_remove_red_eye_24" />
 
     <TextView
         android:id="@+id/countView"
-        android:layout_width="50dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:textSize="16sp"
