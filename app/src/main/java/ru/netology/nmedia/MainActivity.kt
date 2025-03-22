@@ -3,18 +3,51 @@ package ru.netology.nmedia
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import ru.netology.nmedia.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        val binding = ActivityMainBinding.inflate((layoutInflater))
+        setContentView(binding.root)
+        val likesCount = Likes()
+        var post = Post(
+            id = 1,
+            author = "Нетология. Университет интернет-проффесий будущего",
+            content = "Привет, это новая Нетология! Когда-то Нетология начиналась с интенсивов по онлайн-маркетингу. Затем появились курсы по дизайну, разработке, аналитике и управлению. Мы растём сами и помогаем расти студентам: от новичков до уверенных профессионалов. Но самое важное остаётся с нами: мы верим, что в каждом уже есть сила, которая заставляет хотеть больше, целиться выше, бежать быстрее. Наша миссия — помочь встать на путь роста и начать цепочку перемен → http://netolo.gy/fyb",
+            published = "21 мая в 18:36",
+            likedByMe = false
+        )
+        with(binding) {
+            author.text = post.author
+            published.text = post.published
+            content.text = post.content
+            countLikes.text = likesCount.like(post.countLikes)
+            countReposts.text = likesCount.like(post.countRepost)
+            if (post.likedByMe) {
+                likes.setImageResource(R.drawable.baseline_favorite_24)
+            }
+            likes.setOnClickListener {
+                post.likedByMe = !post.likedByMe
+                post.countLikes = if (post.likedByMe) post.countLikes + 1 else post.countLikes - 1
+                countLikes.text = likesCount.like(post.countLikes)
+                likes.setImageResource(
+                    if (post.likedByMe) {
+                        R.drawable.baseline_favorite_24
+
+                    } else {
+                        R.drawable.baseline_favorite_border_24
+                    }
+                )
+            }
+
+            repostButton.setOnClickListener {
+                post.countRepost++
+                countReposts.text = likesCount.like(post.countRepost)
+            }
         }
+
     }
 }
