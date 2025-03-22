@@ -1,7 +1,7 @@
 package ru.netology.nmedia
 
-class Likes {
-    fun like(countLike: Int): String {
+class NumberFormatting {
+    fun formatting(countLike: Int): String {
 
         return when {
             countLike >= 1000_000 -> "${countLike / 1000_000}. ${countLike % 1000_000 / 100_000} M"
