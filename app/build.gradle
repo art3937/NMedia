@@ -33,7 +33,12 @@ buildFeatures.viewBinding = true
 }
 
 dependencies {
-
+def viewmodel_version = "2.8.7"
+    def livedata_version = "2.8.7"
+    def activity_version = "1.10.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$viewmodel_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$livedata_version"
+    implementation "androidx.activity:activity-ktx:$activity_version"
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
     implementation libs.material
