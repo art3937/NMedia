@@ -5,8 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="30dp"
-    android:paddingHorizontal="@dimen/padding_size"
+    android:padding="@dimen/padding_size"
     tools:context=".MainActivity">
 
 
@@ -51,7 +50,7 @@
         android:contentDescription="@string/description_post_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@drawable/baseline_more_vert_24" />
+        app:srcCompat="@drawable/baseline_more_vert_24" />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrierTop"
@@ -84,7 +83,7 @@
         android:contentDescription="@string/description_post_likes"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/barrierBottom"
-        app:srcCompat="@drawable/baseline_favorite_border_24" />
+        tools:srcCompat="@drawable/baseline_favorite_border_24" />
 
     <TextView
         android:id="@+id/countLikes"
