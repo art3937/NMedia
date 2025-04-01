@@ -7,4 +7,11 @@
     <string name="countLikes" translatable="false">5</string>
     <string name="description_post_repost">repost</string>
     <string name="description_post_views">views</string>
+    <string name="menu_remove">Remove</string>
+    <string name="menu_edit">Edit</string>
+    <string name="add_button" translatable="false">add Button</string>
+    <string name="text_post" translatable="false">Text Post</string>
+    <string name="error_empty_content">Empty Content</string>
+    <string name="cancel" translatable="false">Cancel</string>
+    <string name="edit_image" translatable="false">Edit Image</string>
 </resources>

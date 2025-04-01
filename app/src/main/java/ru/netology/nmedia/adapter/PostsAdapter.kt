@@ -1,29 +1,38 @@
 package ru.netology.nmedia.adapter
 
+import android.os.Build
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.NumberFormatting
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
+import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.databinding.CardPostBinding
-import ru.netology.nmedia.adapter.PostDiffCallback
 
+interface OneInteractionListener {
+    fun oneLike(post: Post)
+    fun onRemove(post: Post)
+    fun onShare(post: Post)
+    fun onEdit(post: Post)
+}
 
-typealias OnLikeListener = (Post) -> Unit
-typealias OnShareListener = (Post) -> Unit
 
 class PostsAdapter(
-    private val onLikeListener: OnLikeListener,
-    private val onShareListener: OnShareListener
+    private val oneInteractionListener: OneInteractionListener,
+    private val bindingActivity: ActivityMainBinding
 ) : ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return PostViewHolder(binding, onLikeListener, onShareListener)
+        return PostViewHolder(binding, bindingActivity, oneInteractionListener)
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         val post = getItem(position)
         holder.bind(post)
@@ -32,10 +41,12 @@ class PostsAdapter(
 
 class PostViewHolder(
     private val binding: CardPostBinding,
-    private val onLikeListener: OnLikeListener,
-    private val onShareListener: OnShareListener
+    private val bindingActivity: ActivityMainBinding,
+    private val oneInteractionListener: OneInteractionListener
 ) : RecyclerView.ViewHolder(binding.root) {
     private val numberFormatting = NumberFormatting()
+
+    @RequiresApi(Build.VERSION_CODES.Q)
     fun bind(post: Post) = with(binding) {
         binding.apply {
             author.text = post.author
@@ -45,15 +56,41 @@ class PostViewHolder(
                 if (post.likedByMe) R.drawable.baseline_favorite_24 else R.drawable.baseline_favorite_border_24
             )
             likes.setOnClickListener {
-                onLikeListener(post)
+                oneInteractionListener.oneLike(post)
             }
             countLikes.text = numberFormatting.formatting(post.countLikes)
 
         }
         repostButton.setOnClickListener {
-            onShareListener(post)
+            oneInteractionListener.onShare(post)
         }
         countReposts.text = numberFormatting.formatting(post.countRepost)
+
+        menu.setOnClickListener {
+
+            PopupMenu(it.context, it).apply {
+                inflate(R.menu.post_actions)
+                setOnMenuItemClickListener { item ->
+                    when (item.itemId) {
+                        R.id.remove -> {
+                            oneInteractionListener.onRemove(post)
+                            true
+                        }
+
+                        R.id.edit -> {
+                            bindingActivity.apply {
+                                group.visibility = View.VISIBLE
+                                authorName.text = author.text
+                            }
+                            oneInteractionListener.onEdit(post)
+                            true
+                        }
+
+                        else -> false
+                    }
+                }
+            }.show()
+        }
     }
 }
 
