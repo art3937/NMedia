@@ -52,22 +52,20 @@ class PostViewHolder(
             author.text = post.author
             published.text = post.published
             content.text = post.content
-            likes.setImageResource(
-                if (post.likedByMe) R.drawable.baseline_favorite_24 else R.drawable.baseline_favorite_border_24
-            )
-            likes.setOnClickListener {
-                oneInteractionListener.oneLike(post)
-            }
-            countLikes.text = numberFormatting.formatting(post.countLikes)
+            likes.text = numberFormatting.formatting(post.countLikes)
+            repostButton.text = numberFormatting.formatting(post.countRepost)
+            countView.text = numberFormatting.formatting(post.countViews)
+            likes.isChecked = post.likedByMe
+        }
 
+        likes.setOnClickListener {
+            oneInteractionListener.oneLike(post)
         }
         repostButton.setOnClickListener {
             oneInteractionListener.onShare(post)
         }
-        countReposts.text = numberFormatting.formatting(post.countRepost)
 
         menu.setOnClickListener {
-
             PopupMenu(it.context, it).apply {
                 inflate(R.menu.post_actions)
                 setOnMenuItemClickListener { item ->
