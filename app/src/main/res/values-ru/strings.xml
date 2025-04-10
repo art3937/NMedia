@@ -10,4 +10,6 @@
     <string name="menu_remove">Удалить</string>
     <string name="error_empty_content">Пусто</string>
     <string name="menu_edit">Редактировать</string>
+    <string name="video_content">Видео</string>
+    <string name="button_play_content">Запуск</string>
 </resources>

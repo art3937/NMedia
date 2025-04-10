@@ -14,4 +14,7 @@
     <string name="error_empty_content">Empty Content</string>
     <string name="cancel" translatable="false">Cancel</string>
     <string name="edit_image" translatable="false">Edit Image</string>
+    <string name="video_content">Video</string>
+    <string name="button_play_content">Play</string>
+
 </resources>
