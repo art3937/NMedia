@@ -1,16 +1,19 @@
-package ru.netology.nmedia
+package ru.netology.nmedia.activity
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import ru.netology.nmedia.NewPostResultContract
+import ru.netology.nmedia.Post
+import ru.netology.nmedia.PostViewModel
+import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.OneInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.ActivityMainBinding
-import ru.netology.nmedia.util.AndroidUtils
+import ru.netology.nmedia.databinding.ActivityNewPostBinding
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,14 +21,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val viewModel: PostViewModel by viewModels()
 
+        val newPostLauncher = registerForActivityResult(NewPostResultContract) { content ->
+            content ?: return@registerForActivityResult
+            viewModel.changeContentAndSave(content)
+        }
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        val viewModel: PostViewModel by viewModels()
         val adapter = PostsAdapter(object : OneInteractionListener {
             override fun oneLike(post: Post) {
                 viewModel.like(post.id)
@@ -37,47 +44,41 @@ class MainActivity : AppCompatActivity() {
 
             override fun onShare(post: Post) {
                 viewModel.sharePost(post.id)
+                val intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, post.content)
+                    type = "text/plain"
+                }
+                val shareIntent =
+                    Intent.createChooser(intent, getString(R.string.description_post_repost))
+                startActivity(shareIntent)
             }
 
             override fun onEdit(post: Post) {
                 viewModel.edit(post)
+                newPostLauncher.launch(post.content)
             }
-        }, binding)
+        })//создаю адаптер
+
         binding.list.adapter = adapter
         viewModel.data.observe(this) { posts ->
             val newPost = adapter.currentList.size < posts.size
             adapter.submitList(posts) {
                 if (newPost) {
-                    binding.list.scrollToPosition(0)
+                    binding.list.scrollToPosition(0)//скролю вверх если новый пост
                 }
             }
         }
-
-        viewModel.edited.observe(this) {
-            if (it.id != 0L) {
-                binding.addContent.setText(it.content)
-                binding.addContent.requestFocus()
-            }
-        }
-        binding.addPost.setOnClickListener {
-            binding.group.visibility = View.GONE
-            val text = binding.addContent.text.toString()
-            if (text.isBlank()) {
-                Toast.makeText(this, R.string.error_empty_content, Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
-            viewModel.changeContentAndSave(text)
-            binding.addContent.setText("")
-            binding.addContent.clearFocus()
-            AndroidUtils.hideKeyboard(it)
+        binding.fab.setOnClickListener {
+            newPostLauncher.launch("")
         }
 
-        binding.cancel.setOnClickListener {
-            binding.addContent.setText("")
-            binding.addContent.clearFocus()
-            viewModel.cancel()
-            AndroidUtils.hideKeyboard(it)
-            binding.group.visibility = View.GONE
-        }
+//        binding.cancel.setOnClickListener {
+//            binding.addContent.setText("")
+//            binding.addContent.clearFocus()
+//            viewModel.cancel()
+//            AndroidUtils.hideKeyboard(it)
+//            binding.group.visibility = View.GONE
+//        }
     }
 }

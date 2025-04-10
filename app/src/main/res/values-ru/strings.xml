@@ -5,7 +5,7 @@
     <string name="description_post_author">Пост автора аватара</string>
     <string name="description_post_menu">меню</string>
     <string name="description_post_likes">лайки</string>
-    <string name="description_post_repost">поделиться</string>
+    <string name="description_post_repost">Поделиться</string>
     <string name="description_post_views">просмотры</string>
     <string name="menu_remove">Удалить</string>
     <string name="error_empty_content">Пусто</string>
