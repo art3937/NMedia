@@ -1,6 +1,7 @@
 package ru.netology.nmedia.activity
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -58,6 +59,11 @@ class MainActivity : AppCompatActivity() {
                 viewModel.edit(post)
                 newPostLauncher.launch(post.content)
             }
+
+            override fun startActivity(url: String){
+                val openPage = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                startActivity(openPage);
+            }
         })//создаю адаптер
 
         binding.list.adapter = adapter
@@ -72,6 +78,7 @@ class MainActivity : AppCompatActivity() {
         binding.fab.setOnClickListener {
             newPostLauncher.launch("")
         }
+        
 
 //        binding.cancel.setOnClickListener {
 //            binding.addContent.setText("")

@@ -11,8 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.NumberFormatting
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
-import ru.netology.nmedia.activity.NewPostActivity
-import ru.netology.nmedia.databinding.ActivityNewPostBinding
 import ru.netology.nmedia.databinding.CardPostBinding
 
 
@@ -21,6 +19,7 @@ interface OneInteractionListener {
     fun onRemove(post: Post)
     fun onShare(post: Post)
     fun onEdit(post: Post)
+    fun startActivity(url: String)
 }
 
 
@@ -85,6 +84,18 @@ class PostViewHolder(
                     }
                 }
             }.show()
+        }
+
+        binding.play.setOnClickListener {
+            oneInteractionListener.startActivity(post.video)
+        }
+
+        binding.video.setOnClickListener {
+            if (post.video.isBlank()) {
+                oneInteractionListener.onEdit(post)
+            } else {
+                oneInteractionListener.startActivity(post.video)
+            }
         }
     }
 }

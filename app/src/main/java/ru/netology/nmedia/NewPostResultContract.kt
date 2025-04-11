@@ -9,12 +9,13 @@ import ru.netology.nmedia.activity.NewPostActivity
 object NewPostResultContract : ActivityResultContract<String, String?>() {
     override fun createIntent(context: Context, input: String) =
         Intent(context, NewPostActivity::class.java).apply {
-            putExtra(Intent.EXTRA_TEXT, input) // Пихаю значение
+            putExtra(Intent.EXTRA_TEXT, input)
         }
 
 
     override fun parseResult(resultCode: Int, intent: Intent?): String? {
-        return intent?.getStringExtra(Intent.EXTRA_TEXT)
+
+        return intent?.getStringExtra(/* name = */ Intent.EXTRA_TEXT)
     }
 
 }

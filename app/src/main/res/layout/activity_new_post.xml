@@ -14,17 +14,41 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom" />
 
-    <EditText
-        android:id="@+id/add_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:autofillHints="no"
-        android:background="@android:color/transparent"
-        android:gravity="top"
-        android:hint="@string/text_post"
-        android:inputType="textMultiLine"
-        android:isScrollContainer="true"
-        android:padding="@dimen/padding_size" />
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/padding_size">
+
+        <EditText
+            android:id="@+id/add_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="no"
+            android:background="@android:color/transparent"
+            android:gravity="top"
+            android:hint="@string/text_post"
+            android:maxLines="15"
+            android:inputType="textMultiLine"
+            android:isScrollContainer="true"
+            android:padding="@dimen/padding_size"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/text_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="no"
+            android:background="@android:color/transparent"
+            android:gravity="top"
+            android:maxLines="15"
+            android:hint="@string/text_url"
+            android:inputType="textMultiLine"
+            android:isScrollContainer="true"
+            android:padding="@dimen/padding_size"
+
+            app:layout_constraintTop_toBottomOf="@id/add_content" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/ok"

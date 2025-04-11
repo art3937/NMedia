@@ -70,7 +70,7 @@
         android:maxLines="4"
         android:scrollbars="vertical"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/video"
         tools:text="@sample/posts.json/data/content" />
 
     <androidx.constraintlayout.widget.Barrier
@@ -131,7 +131,7 @@
         tools:text="@string/countLikes" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/video"
         android:layout_width="match_parent"
         android:layout_height="256dp"
         android:contentDescription="@string/video_content"
@@ -139,16 +139,17 @@
         app:layout_constraintStart_toStartOf="@id/content"
         app:layout_constraintTop_toTopOf="@id/barrierTop"
         app:srcCompat="@drawable/gorls" />
+
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/play"
         android:layout_width="@dimen/avatar_size"
-        android:background="@android:color/transparent"
         android:layout_height="@dimen/avatar_size"
+        android:background="@android:color/transparent"
         android:contentDescription="@string/button_play_content"
-        app:layout_constraintStart_toStartOf="@id/content"
+        app:layout_constraintBottom_toBottomOf="@id/video"
         app:layout_constraintEnd_toEndOf="@id/menu"
-       app:layout_constraintTop_toTopOf="@id/imageView"
-        app:layout_constraintBottom_toBottomOf="@id/imageView"
+        app:layout_constraintStart_toStartOf="@id/content"
+        app:layout_constraintTop_toTopOf="@id/video"
         app:srcCompat="@drawable/baseline_play_circle_24" />
 
 

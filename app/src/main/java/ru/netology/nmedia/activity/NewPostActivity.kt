@@ -17,9 +17,10 @@ class NewPostActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
         setContentView(binding.root)
+
         val text = intent.getStringExtra(Intent.EXTRA_TEXT)
+
         binding.addContent.setText(text)
         binding.addContent.requestFocus()
         binding.ok.setOnClickListener {
