@@ -14,8 +14,7 @@ object NewPostResultContract : ActivityResultContract<String, String?>() {
 
 
     override fun parseResult(resultCode: Int, intent: Intent?): String? {
-
-        return intent?.getStringExtra(/* name = */ Intent.EXTRA_TEXT)
+        return intent?.getStringExtra(Intent.EXTRA_TEXT)
     }
 
 }
