@@ -2,7 +2,6 @@ package ru.netology.nmedia.adapter
 
 import android.os.Build
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.PopupMenu
@@ -12,24 +11,24 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.NumberFormatting
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.R
-import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.databinding.CardPostBinding
+
 
 interface OneInteractionListener {
     fun oneLike(post: Post)
     fun onRemove(post: Post)
     fun onShare(post: Post)
     fun onEdit(post: Post)
+    fun startActivity(url: String)
 }
 
 
 class PostsAdapter(
-    private val oneInteractionListener: OneInteractionListener,
-    private val bindingActivity: ActivityMainBinding
+    private val oneInteractionListener: OneInteractionListener
 ) : ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return PostViewHolder(binding, bindingActivity, oneInteractionListener)
+        return PostViewHolder(binding, oneInteractionListener)
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -41,7 +40,6 @@ class PostsAdapter(
 
 class PostViewHolder(
     private val binding: CardPostBinding,
-    private val bindingActivity: ActivityMainBinding,
     private val oneInteractionListener: OneInteractionListener
 ) : RecyclerView.ViewHolder(binding.root) {
     private val numberFormatting = NumberFormatting()
@@ -76,18 +74,28 @@ class PostViewHolder(
                         }
 
                         R.id.edit -> {
-                            bindingActivity.apply {
-                                group.visibility = View.VISIBLE
-                                authorName.text = author.text
-                            }
                             oneInteractionListener.onEdit(post)
                             true
                         }
 
-                        else -> false
+                        else -> {
+                            false
+                        }
                     }
                 }
             }.show()
+        }
+
+        binding.play.setOnClickListener {
+            oneInteractionListener.startActivity(post.video)
+        }
+
+        binding.video.setOnClickListener {
+            if (post.video.isBlank()) {
+                oneInteractionListener.onEdit(post)
+            } else {
+                oneInteractionListener.startActivity(post.video)
+            }
         }
     }
 }

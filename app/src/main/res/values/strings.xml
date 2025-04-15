@@ -5,7 +5,7 @@
     <string name="description_post_menu">Post menu</string>
     <string name="description_post_likes">Post author likes</string>
     <string name="countLikes" translatable="false">10000</string>
-    <string name="description_post_repost">repost</string>
+    <string name="description_post_repost">Repost</string>
     <string name="description_post_views">views</string>
     <string name="menu_remove">Remove</string>
     <string name="menu_edit">Edit</string>
@@ -14,4 +14,8 @@
     <string name="error_empty_content">Empty Content</string>
     <string name="cancel" translatable="false">Cancel</string>
     <string name="edit_image" translatable="false">Edit Image</string>
+    <string name="video_content">Video</string>
+    <string name="button_play_content">Play</string>
+    <string name="text_url" translatable="false">Url</string>
+
 </resources>
