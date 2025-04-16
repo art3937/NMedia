@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingHorizontal="@dimen/padding_size"
-    tools:context=".activity.MainActivity">
+    tools:context=".activity.FeedFragment">
 
 
 
@@ -106,6 +106,12 @@
         app:layout_constraintTop_toTopOf="@+id/likes"
         tools:text="@string/countLikes" />
 
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="avatar,author,published,content" />
 
     <ImageView
         android:id="@+id/view"

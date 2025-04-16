@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.PopupMenu
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -96,6 +97,10 @@ class PostViewHolder(
             } else {
                 oneInteractionListener.startActivity(post.video)
             }
+        }
+
+        binding.group.setOnClickListener{
+
         }
     }
 }
