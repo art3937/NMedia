@@ -21,6 +21,7 @@ interface OneInteractionListener {
     fun onShare(post: Post)
     fun onEdit(post: Post)
     fun startActivity(url: String)
+    fun startActivityPostRead(post: Post)
 }
 
 
@@ -47,6 +48,7 @@ class PostViewHolder(
 
     @RequiresApi(Build.VERSION_CODES.Q)
     fun bind(post: Post) = with(binding) {
+        binding.content.maxLines = 4
         binding.apply {
             author.text = post.author
             published.text = post.published
@@ -99,9 +101,14 @@ class PostViewHolder(
             }
         }
 
-        binding.group.setOnClickListener{
-
+        binding.group.setOnClickListener {
+            oneInteractionListener.startActivityPostRead(post)
         }
+
+        binding.content.setOnClickListener() {
+            binding.content.maxLines = Int.MAX_VALUE
+        }
+
     }
 }
 

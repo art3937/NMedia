@@ -39,6 +39,7 @@ arguments?.textArg?.let(binding.addContent::setText)
             }
             findNavController().navigateUp()
         }
+
         return binding.root
     }
 

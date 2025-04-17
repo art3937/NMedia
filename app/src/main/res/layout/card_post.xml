@@ -10,8 +10,6 @@
     tools:context=".activity.FeedFragment">
 
 
-
-
     <ImageView
         android:id="@+id/avatar"
         android:layout_width="@dimen/avatar_size"
@@ -65,13 +63,13 @@
 
     <TextView
         android:id="@+id/content"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:maxLines="4"
-        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/video"
         tools:text="@sample/posts.json/data/content" />
+
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrierBottom"
@@ -109,9 +107,15 @@
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="avatar,author,published,content" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:constraint_referenced_ids="avatar,author,published,content"
+        app:layout_constraintBottom_toBottomOf="@id/barrierTop"
+        app:layout_constraintEnd_toStartOf="@id/menu"
+        app:layout_constraintStart_toEndOf="@id/avatar"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/view"
