@@ -55,7 +55,7 @@ class PostRepositoryFilesImpl(private val context: Context) : PostRepository {
         posts = if (post.id == 0L) {
             listOf(post.copy(id = nextId++, author = "Mi")) + posts
         } else {
-            posts.map { if (it.id != post.id) it else it.copy(content = post.content) }
+            posts.map { if (it.id != post.id) it else it.copy(content = post.content, video = post.video) }
         }
     }
 

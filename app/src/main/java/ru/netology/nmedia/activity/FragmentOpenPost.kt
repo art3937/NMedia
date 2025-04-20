@@ -16,7 +16,7 @@ import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.R
-import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
+
 import ru.netology.nmedia.adapter.OneInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.CardPostBinding
@@ -67,6 +67,7 @@ class FragmentOpenPost : Fragment() {
                     R.id.action_fragmentOpenPost_to_newPostFragment,
                     Bundle().apply {
                         textArg = post.content
+                        text = post.video
                     })
 //                newPostLauncher.launch(post.content)
             }
@@ -111,7 +112,6 @@ class FragmentOpenPost : Fragment() {
                             when (item.itemId) {
                                 R.id.remove -> {
                                     oneInteractionListener.onRemove(postActual)
-
                                     true
                                 }
 
@@ -128,10 +128,18 @@ class FragmentOpenPost : Fragment() {
                     }.show()
                 }
                 post.video.setOnClickListener {
-                    oneInteractionListener.startActivity(postActual.video)
+                    if (postActual.video.isBlank()) {
+                        oneInteractionListener.onEdit(postActual)
+                    } else {
+                        oneInteractionListener.startActivity(postActual.video)
+                    }
                 }
-                post.group.setOnClickListener {
-                    oneInteractionListener.startActivity(postActual.video)
+                post.play.setOnClickListener {
+                    if (postActual.video.isBlank()) {
+                        oneInteractionListener.onEdit(postActual)
+                    } else {
+                        oneInteractionListener.startActivity(postActual.video)
+                    }
                 }
             }
         }
@@ -141,5 +149,6 @@ class FragmentOpenPost : Fragment() {
 
     companion object {
         var Bundle.textArg by StringArg
+        var Bundle.text by StringArg
     }
 }

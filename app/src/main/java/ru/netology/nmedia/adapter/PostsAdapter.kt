@@ -89,11 +89,15 @@ class PostViewHolder(
             }.show()
         }
 
-        binding.play.setOnClickListener {
-            oneInteractionListener.startActivity(post.video)
-        }
 
         binding.video.setOnClickListener {
+            if (post.video.isBlank()) {
+                oneInteractionListener.onEdit(post)
+            } else {
+                oneInteractionListener.startActivity(post.video)
+            }
+        }
+        binding.play.setOnClickListener {
             if (post.video.isBlank()) {
                 oneInteractionListener.onEdit(post)
             } else {

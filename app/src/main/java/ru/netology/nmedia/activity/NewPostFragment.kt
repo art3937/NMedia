@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedDispatcher
+import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -13,7 +15,7 @@ import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
 import ru.netology.nmedia.util.StringArg
 
-class NewPostFragment : Fragment() {
+class NewPostFragment() : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -32,18 +34,21 @@ class NewPostFragment : Fragment() {
         // binding.addContent.setText(text)
         binding.addContent.requestFocus()
         arguments?.textArg?.let(binding.addContent::setText)
+        arguments?.text?.let(binding.textUrl::setText)
         binding.ok.setOnClickListener {
             val content = binding.addContent.text.toString()
+            val url = binding.textUrl.text.toString()
             if (content.isNotBlank()) {
-                viewModel.changeContentAndSave(content)
+                viewModel.changeContentAndSave(content,url)
             }
             findNavController().navigateUp()
         }
-
+        viewModel.cancel()
         return binding.root
     }
 
     companion object {
         var Bundle.textArg by StringArg
+var Bundle.text by StringArg
     }
 }
