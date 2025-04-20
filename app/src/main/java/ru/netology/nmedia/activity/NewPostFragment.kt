@@ -43,7 +43,7 @@ class NewPostFragment() : Fragment() {
             }
             findNavController().navigateUp()
         }
-        viewModel.cancel()
+       // viewModel.cancel()
         return binding.root
     }
 
