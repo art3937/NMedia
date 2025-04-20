@@ -31,7 +31,7 @@ class NewPostFragment : Fragment() {
         //val text = intent.getStringExtra(Intent.EXTRA_TEXT)
         // binding.addContent.setText(text)
         binding.addContent.requestFocus()
-arguments?.textArg?.let(binding.addContent::setText)
+        arguments?.textArg?.let(binding.addContent::setText)
         binding.ok.setOnClickListener {
             val content = binding.addContent.text.toString()
             if (content.isNotBlank()) {
@@ -43,7 +43,7 @@ arguments?.textArg?.let(binding.addContent::setText)
         return binding.root
     }
 
-    companion object{
-var Bundle.textArg by StringArg
+    companion object {
+        var Bundle.textArg by StringArg
     }
 }

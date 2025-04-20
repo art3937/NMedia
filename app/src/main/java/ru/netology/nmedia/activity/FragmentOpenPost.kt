@@ -39,13 +39,14 @@ class FragmentOpenPost : Fragment() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val adapter = PostsAdapter(object : OneInteractionListener {
+        val oneInteractionListener = object : OneInteractionListener {
             override fun oneLike(post: Post) {
                 viewModel.like(post.id)
             }
 
             override fun onRemove(post: Post) {
                 viewModel.removeById(post.id)
+                findNavController().navigateUp()
             }
 
             override fun onShare(post: Post) {
@@ -76,14 +77,65 @@ class FragmentOpenPost : Fragment() {
             }
 
             override fun startActivityPostRead(post: Post) {
+                findNavController().navigate(
+                    R.id.action_feedFragment_to_fragmentOpenPost,
+                    Bundle().apply {
+                        textArg = post.id.toString()
+                    })
             }
-        })
-
-        binding.list.adapter = adapter
-        viewModel.data.observe(viewLifecycleOwner) { posts ->
-            val res = arguments?.textArg?.toLong()
-            adapter.submitList(posts.filter { it.id == res })
         }
+
+
+        val res = arguments?.textArg?.toLong()
+        viewModel.data.observe(viewLifecycleOwner) { posts ->
+            with(binding) {
+                val postActual = posts.find { it.id == res } ?: return@observe
+                post.likes.text = postActual.countLikes.toString()
+                post.likes.isChecked = postActual.likedByMe
+                post.repostButton.text = postActual.countRepost.toString()
+                post.content.text = postActual.content
+                post.author.text = postActual.author
+                post.published.text = postActual.published
+                post.content.maxLines = Int.MAX_VALUE
+
+                post.likes.setOnClickListener {
+                    oneInteractionListener.oneLike(postActual)
+                }
+                post.repostButton.setOnClickListener {
+                    oneInteractionListener.onShare(postActual)
+                }
+                post.menu.setOnClickListener {
+                    PopupMenu(it.context, it).apply {
+                        inflate(R.menu.post_actions)
+                        setOnMenuItemClickListener { item ->
+                            when (item.itemId) {
+                                R.id.remove -> {
+                                    oneInteractionListener.onRemove(postActual)
+
+                                    true
+                                }
+
+                                R.id.edit -> {
+                                    oneInteractionListener.onEdit(postActual)
+                                    true
+                                }
+
+                                else -> {
+                                    false
+                                }
+                            }
+                        }
+                    }.show()
+                }
+                post.video.setOnClickListener {
+                    oneInteractionListener.startActivity(postActual.video)
+                }
+                post.group.setOnClickListener {
+                    oneInteractionListener.startActivity(postActual.video)
+                }
+            }
+        }
+
         return binding.root
     }
 
