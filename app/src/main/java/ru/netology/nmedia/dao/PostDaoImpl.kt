@@ -15,6 +15,7 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDao {
             ${PostColumns.COLUMN_PUBLISHED} TEXT NOT NULL,
             ${PostColumns.COLUMN_LIKED_BY_ME} BOOLEAN NOT NULL DEFAULT 0,
             ${PostColumns.COLUMN_LIKES} INTEGER NOT NULL DEFAULT 0
+             ${PostColumns.SHARED} INTEGER NOT NULL DEFAULT 0
         );
         """.trimIndent()
     }
@@ -27,13 +28,15 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDao {
         const val COLUMN_PUBLISHED = "published"
         const val COLUMN_LIKED_BY_ME = "likedByMe"
         const val COLUMN_LIKES = "likes"
+        const val SHARED = "share"
         val ALL_COLUMNS = arrayOf(
             COLUMN_ID,
             COLUMN_AUTHOR,
             COLUMN_CONTENT,
             COLUMN_PUBLISHED,
             COLUMN_LIKED_BY_ME,
-            COLUMN_LIKES
+            COLUMN_LIKES,
+            SHARED
         )
     }
 
@@ -103,6 +106,17 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDao {
             PostColumns.TABLE,
             "${PostColumns.COLUMN_ID} = ?",
             arrayOf(id.toString())
+        )
+    }
+
+    override fun shareById(id: Long) {
+        db.execSQL(
+            """
+           UPDATE posts SET
+               likes = likes + 1
+            
+           WHERE id = ?;
+        """.trimIndent(), arrayOf(id)
         )
     }
 
