@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedDispatcher
-import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -38,12 +36,11 @@ class NewPostFragment() : Fragment() {
         binding.ok.setOnClickListener {
             val content = binding.addContent.text.toString()
             val url = binding.textUrl.text.toString()
-            if (content.isNotBlank()) {
+            if (content.isNotBlank() || url.isNotBlank()) {
                 viewModel.changeContentAndSave(content,url)
             }
             findNavController().navigateUp()
         }
-       // viewModel.cancel()
         return binding.root
     }
 
