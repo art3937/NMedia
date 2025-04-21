@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.PopupMenu
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +21,7 @@ interface OneInteractionListener {
     fun onShare(post: Post)
     fun onEdit(post: Post)
     fun startActivity(url: String)
+    fun startActivityPostRead(post: Post)
 }
 
 
@@ -46,6 +48,7 @@ class PostViewHolder(
 
     @RequiresApi(Build.VERSION_CODES.Q)
     fun bind(post: Post) = with(binding) {
+        binding.content.maxLines = 4
         binding.apply {
             author.text = post.author
             published.text = post.published
@@ -86,9 +89,6 @@ class PostViewHolder(
             }.show()
         }
 
-        binding.play.setOnClickListener {
-            oneInteractionListener.startActivity(post.video)
-        }
 
         binding.video.setOnClickListener {
             if (post.video.isBlank()) {
@@ -97,6 +97,22 @@ class PostViewHolder(
                 oneInteractionListener.startActivity(post.video)
             }
         }
+        binding.play.setOnClickListener {
+            if (post.video.isBlank()) {
+                oneInteractionListener.onEdit(post)
+            } else {
+                oneInteractionListener.startActivity(post.video)
+            }
+        }
+
+        binding.group.setOnClickListener {
+            oneInteractionListener.startActivityPostRead(post)
+        }
+
+        binding.content.setOnClickListener() {
+            binding.content.maxLines = Int.MAX_VALUE
+        }
+
     }
 }
 

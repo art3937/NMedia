@@ -14,7 +14,8 @@ private val empty = Post(
     author = "",
     content = "",
     published = "",
-    likedByMe = false
+    likedByMe = false,
+
 )
 class PostViewModel(application: Application): AndroidViewModel(application) {
 
@@ -32,10 +33,10 @@ class PostViewModel(application: Application): AndroidViewModel(application) {
         edited.value = empty
     }
 
-    fun changeContentAndSave(text: String) {
+    fun changeContentAndSave(text: String,url: String) {
         edited.value?.let {
-            if (it.content != text) {
-                repository.saveById(it.copy(content = text))
+            if (it.content != text || it.video != url ) {
+                repository.saveById(it.copy(content = text, video = url))
             }
         }
         edited.value = empty
