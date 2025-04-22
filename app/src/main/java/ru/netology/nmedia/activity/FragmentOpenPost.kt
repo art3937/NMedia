@@ -46,7 +46,7 @@ class FragmentOpenPost : Fragment() {
             }
 
             override fun onShare(post: Post) {
-                viewModel.sharePost(post.id)
+                viewModel.sharePost(post)
                 val intent = Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_TEXT, post.content)

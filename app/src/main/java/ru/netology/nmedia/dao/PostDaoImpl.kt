@@ -14,8 +14,8 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDao {
             ${PostColumns.COLUMN_CONTENT} TEXT NOT NULL,
             ${PostColumns.COLUMN_PUBLISHED} TEXT NOT NULL,
             ${PostColumns.COLUMN_LIKED_BY_ME} BOOLEAN NOT NULL DEFAULT 0,
-            ${PostColumns.COLUMN_LIKES} INTEGER NOT NULL DEFAULT 0
-             ${PostColumns.SHARED} INTEGER NOT NULL DEFAULT 0
+            ${PostColumns.COLUMN_LIKES} INTEGER NOT NULL DEFAULT 0,
+            ${PostColumns.COLUMN_SHARED} INTEGER NOT NULL DEFAULT 0
         );
         """.trimIndent()
     }
@@ -28,7 +28,7 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDao {
         const val COLUMN_PUBLISHED = "published"
         const val COLUMN_LIKED_BY_ME = "likedByMe"
         const val COLUMN_LIKES = "likes"
-        const val SHARED = "share"
+        const val COLUMN_SHARED = "share"
         val ALL_COLUMNS = arrayOf(
             COLUMN_ID,
             COLUMN_AUTHOR,
@@ -36,7 +36,7 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDao {
             COLUMN_PUBLISHED,
             COLUMN_LIKED_BY_ME,
             COLUMN_LIKES,
-            SHARED
+            COLUMN_SHARED
         )
     }
 
@@ -64,6 +64,7 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDao {
             put(PostColumns.COLUMN_AUTHOR, "Me")
             put(PostColumns.COLUMN_CONTENT, post.content)
             put(PostColumns.COLUMN_PUBLISHED, "now")
+            put(PostColumns.COLUMN_SHARED, post.countRepost)
         }
         val id = if (post.id != 0L) {
             db.update(
@@ -109,16 +110,7 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDao {
         )
     }
 
-    override fun shareById(id: Long) {
-        db.execSQL(
-            """
-           UPDATE posts SET
-               likes = likes + 1
-            
-           WHERE id = ?;
-        """.trimIndent(), arrayOf(id)
-        )
-    }
+
 
     private fun map(cursor: Cursor): Post {
         with(cursor) {
@@ -129,6 +121,7 @@ class PostDaoImpl(private val db: SQLiteDatabase) : PostDao {
                 published = getString(getColumnIndexOrThrow(PostColumns.COLUMN_PUBLISHED)),
                 likedByMe = getInt(getColumnIndexOrThrow(PostColumns.COLUMN_LIKED_BY_ME)) != 0,
                 countLikes = getInt(getColumnIndexOrThrow(PostColumns.COLUMN_LIKES)),
+                countRepost = getInt(getColumnIndexOrThrow(PostColumns.COLUMN_SHARED))
             )
         }
     }

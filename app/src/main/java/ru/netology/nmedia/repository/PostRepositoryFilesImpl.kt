@@ -42,9 +42,13 @@ class PostRepositoryFilesImpl(private val context: Context) : PostRepository {
         }
     }
 
-    override fun shareById(id: Long) {
-        posts = posts.map { if (it.id == id) it.copy(countRepost = it.countRepost + 1) else it }
+    override fun shareById(post: Post) {
+        TODO("Not yet implemented")
     }
+
+//    override fun shareById(id: Long) {
+//        posts = posts.map { if (it.id == id) it.copy(countRepost = it.countRepost + 1) else it }
+//    }
 
     override fun removeById(id: Long) {
         posts = posts.filter { it.id != id }
