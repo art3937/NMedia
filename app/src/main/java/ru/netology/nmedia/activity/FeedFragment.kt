@@ -18,6 +18,7 @@ import ru.netology.nmedia.activity.FragmentOpenPost.Companion.text
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.OneInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
+import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 
 class FeedFragment() : Fragment(){
@@ -96,6 +97,7 @@ class FeedFragment() : Fragment(){
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
           //  newPostLauncher.launch("")
         }
+        println(PostEntity(0,"","","",true))
         return binding.root
     }
 

@@ -12,22 +12,22 @@ class PostRepositorySQLiteImpl(
     private val data = MutableLiveData(posts)
 
     init {
-        posts = dao.getAll()
+//        posts = dao.getAll()
         data.value = posts
     }
 
     override fun getAll(): LiveData<List<Post>> = data
 
     override fun saveById(post: Post) {
-        val id = post.id
-        val saved = dao.save(post)
-        posts = if (id == 0L) {
-            listOf(saved) + posts
-        } else {
-            posts.map {
-                if (it.id != id) it else dao.save(post.copy(content = post.content, video = post.video))
-            }
-        }
+  //      val id = post.id
+//        val saved = dao.save(post)
+//        posts = if (id == 0L) {
+//            listOf(saved) + posts
+//        } else {
+//            posts.map {
+//                if (it.id != id) it else dao.save(post.copy(content = post.content, video = post.video))
+//            }
+//        }
         data.value = posts
     }
 
@@ -46,7 +46,7 @@ class PostRepositorySQLiteImpl(
         posts = posts.map { if (it.id == post.id) post.copy(countRepost = it.countRepost + 1)
             else it
         }
-        dao.save(posts.last { it.id == post.id })
+//        dao.save(posts.last { it.id == post.id })
         data.value = posts
     }
 
