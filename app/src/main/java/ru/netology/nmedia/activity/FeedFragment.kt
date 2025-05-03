@@ -21,7 +21,7 @@ import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 
-class FeedFragment() : Fragment(){
+class FeedFragment() : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,10 +61,12 @@ class FeedFragment() : Fragment(){
 
             override fun onEdit(post: Post) {
                 viewModel.edit(post)
-                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment,Bundle().apply {
-                    textArg=post.content
-                    text=post.video
-                })
+                findNavController().navigate(
+                    R.id.action_feedFragment_to_newPostFragment,
+                    Bundle().apply {
+                        textArg = post.content
+                        text = post.video
+                    })
 //                newPostLauncher.launch(post.content)
             }
 
@@ -74,7 +76,7 @@ class FeedFragment() : Fragment(){
             }
 
             override fun startActivityPostRead(post: Post) {
-               // viewModel.edit(post)
+                // viewModel.edit(post)
 
                 findNavController().navigate(
                     R.id.action_feedFragment_to_fragmentOpenPost,
@@ -95,11 +97,9 @@ class FeedFragment() : Fragment(){
         }
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
-          //  newPostLauncher.launch("")
+            //  newPostLauncher.launch("")
         }
-        println(PostEntity(0,"","","",true))
         return binding.root
     }
-
 
 }
