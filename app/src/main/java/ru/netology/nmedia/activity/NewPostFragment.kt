@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -33,19 +34,28 @@ class NewPostFragment() : Fragment() {
         binding.addContent.requestFocus()
         arguments?.textArg?.let(binding.addContent::setText)
         arguments?.text?.let(binding.textUrl::setText)
+
         binding.ok.setOnClickListener {
             val content = binding.addContent.text.toString()
             val url = binding.textUrl.text.toString()
             if (content.isNotBlank() || url.isNotBlank()) {
-                viewModel.changeContentAndSave(content,url)
+                viewModel.changeContentAndSave(content, url)
             }
             findNavController().navigateUp()
         }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    viewModel.cancel()
+                    findNavController().navigateUp()
+                }
+
+            })
         return binding.root
     }
 
     companion object {
         var Bundle.textArg by StringArg
-var Bundle.text by StringArg
+        var Bundle.text by StringArg
     }
 }

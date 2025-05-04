@@ -113,7 +113,7 @@ return@let
                 .setSmallIcon(R.drawable.ic_notification).
                 setContentTitle(
                     getString(
-                        R.string.notification_user_added, added.userName, added.postAuthor
+                        R.string.notification_user_added, added.userName
                     )
                 )
                 .setStyle(NotificationCompat.BigTextStyle()

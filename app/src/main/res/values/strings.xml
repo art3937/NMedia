@@ -22,7 +22,7 @@
     <string name="channel_remote_description" translatable="false">Notifications from remote server</string>
     <string name="notification_user_liked" translatable="false">User %1$s liked %2$s\'s post</string>
     <string name="notification_user_shared">User %1$s shared %2$s\'s post</string>
-    <string name="notification_user_added">User %1$s added %2$s\'s post</string>
+    <string name="notification_user_added">User %1$s added new post</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
 
