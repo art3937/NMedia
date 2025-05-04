@@ -13,4 +13,5 @@
     <string name="video_content">Видео</string>
     <string name="button_play_content">Запуск</string>
     <string name="notification_user_shared">Пользователь %1$s поделился %2$s\'s постом</string>
+    <string name="notification_user_added">Пользователь %1$s добавил %2$s\'s пост</string>
 </resources>

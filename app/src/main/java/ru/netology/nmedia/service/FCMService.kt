@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.collection.emptyLongSet
 import androidx.core.app.ActivityCompat
@@ -36,7 +37,7 @@ class FCMService : FirebaseMessagingService() {
 
 
             message.data["action"]?.let {
-                if (it == Action.LIKE.toString() || it == Action.SHARED.toString()) {
+                if (it == Action.LIKE.toString() || it == Action.SHARED.toString()|| it == Action.ADDED.toString()) {
                     when (Action.valueOf(it)) {
                         Action.LIKE -> handleLike(
                             Gson().fromJson(
@@ -47,6 +48,12 @@ class FCMService : FirebaseMessagingService() {
                         Action.SHARED -> handleShared(
                             Gson().fromJson(
                                 message.data["content"], Like::class.java
+                            )
+                        )
+
+                        Action.ADDED -> handleAdded(
+                            Gson().fromJson(
+                                message.data["content"], AddContent::class.java
                             )
                         )
                     }
@@ -68,11 +75,14 @@ return@let
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notification).setContentTitle(
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle(
                     getString(
                         R.string.notification_user_liked, like.userName, like.postAuthor
                     )
-                ).build()
+                )
+                .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.chebur))
+                .build()
             NotificationManagerCompat.from(this).notify(Random.nextInt(100_000), notification)
         }
         return
@@ -94,6 +104,28 @@ return@let
         return
     }
 
+    private fun handleAdded(added: AddContent) {
+        if (ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notification).
+                setContentTitle(
+                    getString(
+                        R.string.notification_user_added, added.userName, added.postAuthor
+                    )
+                )
+                .setStyle(NotificationCompat.BigTextStyle()
+                    .bigText(added.contentText))
+            //  .setContentText(added.contentText)
+                .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.chebur))
+                .build()
+            NotificationManagerCompat.from(this).notify(Random.nextInt(100_000), notification)
+        }
+        return
+    }
+
     companion object {
         private const val CHANNEL_ID = "notifications"
     }
@@ -101,16 +133,21 @@ return@let
 
 enum class Action {
     LIKE,
-    SHARED
+    SHARED,
+    ADDED
 }
 
-//"userId": 1,
-//"userName": "Vasiliy",
-//"postId": 2,
-//"postAuthor": "Netology"
 data class Like(
     val userId: Int,
     val userName: String,
     val postId: Int,
     val postAuthor: String
+)
+
+data class AddContent(
+    val userId: Int,
+    val userName: String,
+    val postId: Int,
+    val postAuthor: String,
+    val contentText: String
 )
