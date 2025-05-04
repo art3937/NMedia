@@ -17,6 +17,12 @@
     <string name="video_content">Video</string>
     <string name="button_play_content">Play</string>
     <string name="text_url" translatable="false">Url</string>
+    <string name="msg_token_fmt" translatable="false">token</string>
+    <string name="channel_remote_name" translatable="false">Server notifications</string>
+    <string name="channel_remote_description" translatable="false">Notifications from remote server</string>
+    <string name="notification_user_liked" translatable="false">User %1$s liked %2$s\'s post</string>
+    <string name="notification_user_shared">User %1$s shared %2$s\'s post</string>
+    <string name="notification_user_added">User %1$s added new post</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
 

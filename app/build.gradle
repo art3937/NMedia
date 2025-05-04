@@ -1,7 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-}
+    id 'org.jetbrains.kotlin.kapt'
+    id 'com.google.gms.google-services'
+   }
 
 android {
     namespace 'ru.netology.nmedia'
@@ -16,7 +18,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-buildFeatures.viewBinding = true
+    buildFeatures.viewBinding = true
     buildTypes {
         release {
             minifyEnabled false
@@ -24,15 +26,21 @@ buildFeatures.viewBinding = true
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = '11'
+        jvmTarget = '1.8'
     }
 }
 
+
+
 dependencies {
+    implementation libs.androidx.room.common.jvm
+    implementation libs.androidx.room.runtime.android
+    implementation libs.androidx.annotation
+    testImplementation libs.junit.junit
     def core_version = "1.16.0"
     def appcompat_version = "1.7.0"
     def mdc_version = "1.12.0"
@@ -45,7 +53,9 @@ dependencies {
     def lifecycle_version = "2.8.7"
     def gson_version = "2.13.0"
     def nav_version = "2.8.9"
-
+    def room_version = "2.7.0"
+    def firebase_version = "33.13.0"
+    def play_services_base_version = "17.0.0"
 
     implementation libs.androidx.appcompat
     implementation libs.material
@@ -57,8 +67,15 @@ dependencies {
     implementation libs.gson.v2130
     implementation libs.androidx.navigation.fragment.ktx
     implementation libs.androidx.navigation.ui.ktx
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation platform("com.google.firebase:firebase-bom:$firebase_version")
+    implementation "com.google.firebase:firebase-messaging-ktx"
+    implementation "com.google.android.gms:play-services-base:$play_services_base_version"
 
-    testImplementation libs.junit
+
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core
+
+
+
 }

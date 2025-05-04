@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import ru.netology.nmedia.Post
+import ru.netology.nmedia.dto.Post
 
 class PostRepositorySharedPrefsImpl(context: Context) : PostRepository {
 
@@ -39,9 +39,13 @@ class PostRepositorySharedPrefsImpl(context: Context) : PostRepository {
         }
     }
 
-    override fun shareById(id: Long) {
-        posts = posts.map { if (it.id == id) it.copy(countRepost = it.countRepost + 1) else it }
+    override fun shareById(post: Post) {
+        TODO("Not yet implemented")
     }
+
+//    override fun shareById(id: Long) {
+//        posts = posts.map { if (it.id == id) it.copy(countRepost = it.countRepost + 1) else it }
+//    }
 
     override fun removeById(id: Long) {
         posts = posts.filter { it.id != id }

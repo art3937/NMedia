@@ -6,23 +6,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedDispatcher
-import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import ru.netology.nmedia.Post
+import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.FragmentOpenPost.Companion.text
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
 import ru.netology.nmedia.adapter.OneInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
+import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 
-class FeedFragment() : Fragment(){
+class FeedFragment() : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,7 +48,7 @@ class FeedFragment() : Fragment(){
             }
 
             override fun onShare(post: Post) {
-                viewModel.sharePost(post.id)
+                viewModel.sharePost(post)
                 val intent = Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_TEXT, post.content)
@@ -62,10 +61,12 @@ class FeedFragment() : Fragment(){
 
             override fun onEdit(post: Post) {
                 viewModel.edit(post)
-                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment,Bundle().apply {
-                    textArg=post.content
-                    text=post.video
-                })
+                findNavController().navigate(
+                    R.id.action_feedFragment_to_newPostFragment,
+                    Bundle().apply {
+                        textArg = post.content
+                        text = post.video
+                    })
 //                newPostLauncher.launch(post.content)
             }
 
@@ -75,7 +76,7 @@ class FeedFragment() : Fragment(){
             }
 
             override fun startActivityPostRead(post: Post) {
-               // viewModel.edit(post)
+                // viewModel.edit(post)
 
                 findNavController().navigate(
                     R.id.action_feedFragment_to_fragmentOpenPost,
@@ -96,10 +97,9 @@ class FeedFragment() : Fragment(){
         }
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
-          //  newPostLauncher.launch("")
+            //  newPostLauncher.launch("")
         }
         return binding.root
     }
-
 
 }

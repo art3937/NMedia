@@ -142,9 +142,12 @@
         tools:text="@string/countLikes" />
 
     <ImageView
+
         android:id="@+id/video"
         android:layout_width="match_parent"
         android:layout_height="@dimen/size_video"
+        android:adjustViewBounds="true"
+        android:background="@android:color/transparent"
         android:contentDescription="@string/video_content"
         app:layout_constraintEnd_toEndOf="@id/content"
         app:layout_constraintStart_toStartOf="@id/content"
