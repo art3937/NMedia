@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -87,14 +88,14 @@ class FeedFragment() : Fragment() {
         })//создаю адаптер
 
         binding.list.adapter = adapter
-        viewModel.data.observe(viewLifecycleOwner) { posts ->
-            val newPost = adapter.currentList.size < posts.size
-            adapter.submitList(posts) {
-                if (newPost) {
-                    binding.list.scrollToPosition(0)//скролю вверх если новый пост
-                }
-            }
+        viewModel.data.observe(viewLifecycleOwner){state ->
+            adapter.submitList(state.posts)
+            binding.errorGroup.isVisible = state.isError
+            binding.errorText.text = state.errorToString(requireContext())
+            binding.progress.isVisible = state.loading
+            binding.empty.isVisible = state.empty
         }
+
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
             //  newPostLauncher.launch("")

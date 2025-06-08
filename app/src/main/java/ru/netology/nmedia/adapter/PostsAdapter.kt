@@ -104,7 +104,8 @@ class PostViewHolder(
             }
         }
 
-        binding.group.setOnClickListener {
+        binding.cardPostGroup
+            .setOnClickListener {
             oneInteractionListener.startActivityPostRead(post)
         }
 

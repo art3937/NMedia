@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import ru.netology.nmedia.entity.PostEntity
+import java.util.Date
 
 @Dao
 interface PostDao {
@@ -18,7 +19,7 @@ interface PostDao {
     fun updateContentById(id: Long, content: String,videoUrl: String, author:String)
 
     fun save(post: PostEntity) =
-        if (post.id == 0L) insert(post) else updateContentById(post.id, post.content,post.video,"Mee")
+        if (post.id == 0L) insert(post) else updateContentById(post.id, post.content,post.video,post.author)
 
     @Query("""
         UPDATE PostEntity SET

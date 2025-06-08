@@ -12,7 +12,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
+import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.util.StringArg
+
 
 class NewPostFragment() : Fragment() {
     override fun onCreateView(
@@ -34,14 +36,18 @@ class NewPostFragment() : Fragment() {
         binding.addContent.requestFocus()
         arguments?.textArg?.let(binding.addContent::setText)
         arguments?.text?.let(binding.textUrl::setText)
-
+ viewModel.postCreated.observe(viewLifecycleOwner){
+     AndroidUtils.hideKeyboard(requireView())
+viewModel.load()
+     findNavController().navigateUp()
+ }
         binding.ok.setOnClickListener {
             val content = binding.addContent.text.toString()
             val url = binding.textUrl.text.toString()
             if (content.isNotBlank() || url.isNotBlank()) {
                 viewModel.changeContentAndSave(content, url)
             }
-            findNavController().navigateUp()
+
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
             object : OnBackPressedCallback(true) {

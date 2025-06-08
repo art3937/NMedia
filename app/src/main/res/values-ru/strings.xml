@@ -14,4 +14,8 @@
     <string name="button_play_content">Запуск</string>
     <string name="notification_user_shared">Пользователь %1$s поделился %2$s\'s постом</string>
     <string name="notification_user_added">Пользователь %1$s добавил новый пост</string>
+    <string name="network_error">Нет сети</string>
+    <string name="retry">Повторить</string>
+    <string name="empty">empty</string>
+    <string name="unknown_error">Unknown error</string>
 </resources>

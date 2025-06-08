@@ -25,5 +25,9 @@
     <string name="notification_user_added">User %1$s added new post</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="network_error">Network error</string>
+    <string name="retry">Retry</string>
+    <string name="empty">empty</string>
+    <string name="unknown_error">Unknown error</string>
 
 </resources>

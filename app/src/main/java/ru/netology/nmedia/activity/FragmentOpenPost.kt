@@ -9,8 +9,10 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.map
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.PostViewModel
@@ -29,7 +31,6 @@ class FragmentOpenPost : Fragment() {
     ): View? {
         val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
         val binding = FragmentPostBinding.inflate(inflater, container, false)
-        val binding2 = CardPostBinding.inflate(inflater, container, false)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -84,9 +85,10 @@ class FragmentOpenPost : Fragment() {
 
 
         val res = arguments?.textArg?.toLong()
-        viewModel.data.observe(viewLifecycleOwner) { posts ->
+        val posts = viewModel.data.value?.posts
+
             with(binding) {
-                val postActual = posts.find { it.id == res } ?: return@observe
+                val postActual = posts?.find { it.id == res } ?: error("Response body is postsOpenPost null")
                 post.likes.text = postActual.countLikes.toString()
                 post.likes.isChecked = postActual.likedByMe
                 post.repostButton.text = postActual.countRepost.toString()
@@ -138,7 +140,6 @@ class FragmentOpenPost : Fragment() {
                     }
                 }
             }
-        }
 
         return binding.root
     }
