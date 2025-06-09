@@ -21,6 +21,7 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.OneInteractionListener
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.databinding.FragmentPostBinding
+import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.util.StringArg
 
 class FragmentOpenPost : Fragment() {
@@ -38,7 +39,7 @@ class FragmentOpenPost : Fragment() {
         }
         val oneInteractionListener = object : OneInteractionListener {
             override fun oneLike(post: Post) {
-                viewModel.like(post.id)
+                viewModel.like(post.id,post.likedByMe)
             }
 
             override fun onRemove(post: Post) {
@@ -81,62 +82,73 @@ class FragmentOpenPost : Fragment() {
                         textArg = post.id.toString()
                     })
             }
+
+            override fun load() {
+                viewModel.load()
+            }
         }
 
 
         val res = arguments?.textArg?.toLong()
         val posts = viewModel.data.value?.posts
-        val postActual: Post = posts?.find { it.id == res } ?: error("Response body is postsOpenPost null")
-            with(binding) {
 
-                post.likes.text = postActual.countLikes.toString()
-                post.likes.isChecked = postActual.likedByMe
-                post.repostButton.text = postActual.countRepost.toString()
-                post.content.text = postActual.content
-                post.author.text = postActual.author
-                post.published.text = postActual.published
-                post.content.maxLines = Int.MAX_VALUE
+        viewModel.data.observe(viewLifecycleOwner) {
+            binding.post.likes.text =  posts?.find { it.id == res }?.countLikes.toString()
+            oneInteractionListener.load()
+        }
+        val postActual: Post? = posts?.find { it.id == res }
+            if (postActual != null) {
+                binding.apply {
+                    post.likes.text = postActual.countLikes.toString()
+                    post.likes.isChecked = postActual.likedByMe
+                    post.repostButton.text = postActual.countRepost.toString()
+                    post.content.text = postActual.content
+                    post.author.text = postActual.author
+                    post.published.text = postActual.published
+                    post.content.maxLines = Int.MAX_VALUE
 
-                post.likes.setOnClickListener {
-                    oneInteractionListener.oneLike(postActual)
-                }
-                post.repostButton.setOnClickListener {
-                    oneInteractionListener.onShare(postActual)
-                }
-                post.menu.setOnClickListener {
-                    PopupMenu(it.context, it).apply {
-                        inflate(R.menu.post_actions)
-                        setOnMenuItemClickListener { item ->
-                            when (item.itemId) {
-                                R.id.remove -> {
-                                    oneInteractionListener.onRemove(postActual)
-                                    true
-                                }
+                    post.likes.setOnClickListener {
+                        oneInteractionListener.oneLike(postActual)
+                    }
 
-                                R.id.edit -> {
-                                    oneInteractionListener.onEdit(postActual)
-                                    true
-                                }
+                    post.repostButton.setOnClickListener {
+                        oneInteractionListener.onShare(postActual)
+                    }
+                    post.menu.setOnClickListener {
+                        PopupMenu(it.context, it).apply {
+                            inflate(R.menu.post_actions)
+                            setOnMenuItemClickListener { item ->
+                                when (item.itemId) {
+                                    R.id.remove -> {
+                                        oneInteractionListener.onRemove(postActual)
+                                        true
+                                    }
 
-                                else -> {
-                                    false
+                                    R.id.edit -> {
+                                        oneInteractionListener.onEdit(postActual)
+                                        true
+                                    }
+
+                                    else -> {
+                                        false
+                                    }
                                 }
                             }
-                        }
-                    }.show()
-                }
-                post.video.setOnClickListener {
-                    if (postActual.video.isBlank()) {
-                        oneInteractionListener.onEdit(postActual)
-                    } else {
-                        oneInteractionListener.startActivity(postActual.video)
+                        }.show()
                     }
-                }
-                post.play.setOnClickListener {
-                    if (postActual.video.isBlank()) {
-                        oneInteractionListener.onEdit(postActual)
-                    } else {
-                        oneInteractionListener.startActivity(postActual.video)
+                    post.video.setOnClickListener {
+                        if (postActual.video.isBlank()) {
+                            oneInteractionListener.onEdit(postActual)
+                        } else {
+                            oneInteractionListener.startActivity(postActual.video)
+                        }
+                    }
+                    post.play.setOnClickListener {
+                        if (postActual.video.isBlank()) {
+                            oneInteractionListener.onEdit(postActual)
+                        } else {
+                            oneInteractionListener.startActivity(postActual.video)
+                        }
                     }
                 }
             }

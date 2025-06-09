@@ -7,6 +7,7 @@ import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.*
 import ru.netology.nmedia.util.SingleLiveEvent
+import java.io.IOException
 import java.util.Date
 import kotlin.concurrent.thread
 
@@ -19,6 +20,8 @@ private val empty = Post(
 
 )
 class PostViewModel(application: Application): AndroidViewModel(application) {
+
+    val obj = Object()
 
     private val repository: PostRepository = PostRepositoryImpl()
     private val _data = MutableLiveData(FeedModel())
@@ -46,9 +49,53 @@ class PostViewModel(application: Application): AndroidViewModel(application) {
         _data.postValue(result)
     }
 }
-    fun like(id: Long) = repository.likeById(id)
+
+    fun like(id: Long,like:Boolean) {
+        thread {
+            val old = _data.value?.posts.orEmpty()
+//            _data.value?.posts?.forEach { if(it.id == id) like = it.likedByMe }
+            try {
+                val post = repository.likeById(id, !like)
+                _postCreated.postValue(Unit)
+                    val res = _data.value?.posts?.let {
+                        data.value?.posts?.map {
+                            if (it.id != post.id) it else it.copy(
+                                likedByMe = post.likedByMe,
+                                countLikes = post.countLikes
+                            )
+                        }
+                    }?.let {
+                        FeedModel(posts = it)
+                    }
+
+                    _data.postValue(res)
+
+            }catch (e: IOException){
+                _data.postValue(_data.value?.copy(posts = old))
+            }
+
+        }
+    }
+
     fun sharePost(post: Post) = repository.shareById(post)
-    fun removeById(id: Long) = repository.removeById(id)
+    fun removeById(id: Long){
+        thread {
+            val old = _data.value?.posts.orEmpty()
+            try {
+                repository.removeById(id)
+
+            }catch (e: IOException){
+                _data.postValue(_data.value?.copy(posts = old))
+            }
+           // _postCreated.postValue(Unit)
+//            _data.postValue(
+//                _data.value?.copy(posts = _data.value?.posts.orEmpty()
+//                    .filter { it.id != id }
+//                )
+//            )
+        }
+    }
+    //= repository.removeById(id)
     fun edit(post: Post) {
         edited.value = post
     }
@@ -70,6 +117,7 @@ class PostViewModel(application: Application): AndroidViewModel(application) {
                     _postCreated.postValue(Unit)
                 }
             }
+//            edited.value = empty
             edited.postValue(empty)
         }
     }

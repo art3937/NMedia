@@ -40,8 +40,9 @@ class FeedFragment() : Fragment() {
         }
 
         val adapter = PostsAdapter(object : OneInteractionListener {
+
             override fun oneLike(post: Post) {
-                viewModel.like(post.id)
+                viewModel.like(post.id,post.likedByMe)
             }
 
             override fun onRemove(post: Post) {
@@ -85,6 +86,10 @@ class FeedFragment() : Fragment() {
                         textArg = post.id.toString()
                     })
             }
+
+            override fun load() {
+                viewModel.load()
+            }
         })//создаю адаптер
 
         binding.list.adapter = adapter
@@ -94,6 +99,10 @@ class FeedFragment() : Fragment() {
             binding.errorText.text = state.errorToString(requireContext())
             binding.progress.isVisible = state.loading
             binding.empty.isVisible = state.empty
+        }
+
+        binding.retry.setOnClickListener{
+            viewModel.load()
         }
 
         binding.fab.setOnClickListener {

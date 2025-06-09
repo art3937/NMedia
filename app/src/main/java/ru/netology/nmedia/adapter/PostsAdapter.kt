@@ -21,6 +21,7 @@ interface OneInteractionListener {
     fun onEdit(post: Post)
     fun startActivity(url: String)
     fun startActivityPostRead(post: Post)
+    fun load()
 }
 
 
@@ -72,6 +73,7 @@ class PostViewHolder(
                     when (item.itemId) {
                         R.id.remove -> {
                             oneInteractionListener.onRemove(post)
+                            oneInteractionListener.load()
                             true
                         }
 
