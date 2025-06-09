@@ -86,9 +86,9 @@ class FragmentOpenPost : Fragment() {
 
         val res = arguments?.textArg?.toLong()
         val posts = viewModel.data.value?.posts
-
+        val postActual: Post = posts?.find { it.id == res } ?: error("Response body is postsOpenPost null")
             with(binding) {
-                val postActual = posts?.find { it.id == res } ?: error("Response body is postsOpenPost null")
+
                 post.likes.text = postActual.countLikes.toString()
                 post.likes.isChecked = postActual.likedByMe
                 post.repostButton.text = postActual.countRepost.toString()
