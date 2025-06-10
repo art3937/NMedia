@@ -102,7 +102,7 @@ class FeedFragment() : Fragment() {
         }
 
         binding.retry.setOnClickListener{
-            viewModel.load()
+           viewModel.load().toString()
         }
 
         binding.fab.setOnClickListener {

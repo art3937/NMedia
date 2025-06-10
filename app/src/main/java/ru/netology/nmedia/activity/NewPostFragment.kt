@@ -37,15 +37,15 @@ class NewPostFragment() : Fragment() {
         arguments?.textArg?.let(binding.addContent::setText)
         arguments?.text?.let(binding.textUrl::setText)
 
-
+        viewModel.postCreated.observe(viewLifecycleOwner){
+            AndroidUtils.hideKeyboard(requireView())
+            findNavController().navigateUp()
+            viewModel.load()
+        }
         binding.ok.setOnClickListener {
             val content = binding.addContent.text.toString()
             val url = binding.textUrl.text.toString()
-            viewModel.postCreated.observe(viewLifecycleOwner){
-                AndroidUtils.hideKeyboard(requireView())
-                findNavController().navigateUp()
-                viewModel.load()
-            }
+
             if (content.isNotBlank() || url.isNotBlank()) {
                 viewModel.changeContentAndSave(content, url)
             }

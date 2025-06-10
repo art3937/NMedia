@@ -9,19 +9,15 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.map
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.R
 
 import ru.netology.nmedia.adapter.OneInteractionListener
-import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.databinding.FragmentPostBinding
-import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.util.StringArg
 
 class FragmentOpenPost : Fragment() {
@@ -93,18 +89,18 @@ class FragmentOpenPost : Fragment() {
         val posts = viewModel.data.value?.posts
 
         viewModel.data.observe(viewLifecycleOwner) {
-            binding.post.likes.text =  posts?.find { it.id == res }?.countLikes.toString()
+            binding.post.likes.text =  posts?.find { it.id == res }?.likes.toString()
             oneInteractionListener.load()
         }
         val postActual: Post? = posts?.find { it.id == res }
             if (postActual != null) {
                 binding.apply {
-                    post.likes.text = postActual.countLikes.toString()
+                    post.likes.text = postActual.likes.toString()
                     post.likes.isChecked = postActual.likedByMe
                     post.repostButton.text = postActual.countRepost.toString()
                     post.content.text = postActual.content
                     post.author.text = postActual.author
-                    post.published.text = postActual.published
+                    post.published.text = postActual.published.toString()
                     post.content.maxLines = Int.MAX_VALUE
 
                     post.likes.setOnClickListener {
