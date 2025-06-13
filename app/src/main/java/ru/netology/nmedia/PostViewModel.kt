@@ -34,20 +34,35 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         get() = _postCreated
 
     init {
-        load()
+      //  load()
+        loadPosts()
     }
 
     fun load() {
-        thread {
-            _data.postValue(FeedModel(loading = true))
-            val result = try {
-                val posts = repository.getAll()
-                FeedModel(posts = posts, empty = posts.isEmpty())
-            } catch (e: Exception) {
-                FeedModel(error = e)
+//        thread {
+//            _data.postValue(FeedModel(loading = true))
+//            val result = try {
+//                val posts = repository.getAll()
+//                FeedModel(posts = posts, empty = posts.isEmpty())
+//            } catch (e: Exception) {
+//                FeedModel(error = e)
+//            }
+//            _data.postValue(result)
+//        }
+    }
+
+    fun loadPosts(){
+        _data.postValue(FeedModel(loading = true))
+        repository.getAllAsync(object : PostRepository.GetAllCallBack{
+            override fun onSuccess(posts: List<Post>) {
+                _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
             }
-            _data.postValue(result)
-        }
+
+            override fun onError(e: Exception) {
+                _data.postValue( FeedModel(error = e))
+            }
+
+        })
     }
 
     fun like(id: Long, like: Boolean) {
@@ -80,18 +95,16 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun removeById(id: Long) {
         thread {
             val old = _data.value?.posts.orEmpty()
+            _data.postValue(
+                _data.value?.copy(posts = _data.value?.posts.orEmpty()
+                    .filter { it.id != id }
+                )
+            )
             try {
                 repository.removeById(id)
-
             } catch (e: IOException) {
                 _data.postValue(_data.value?.copy(posts = old))
             }
-            // _postCreated.postValue(Unit)
-//            _data.postValue(
-//                _data.value?.copy(posts = _data.value?.posts.orEmpty()
-//                    .filter { it.id != id }
-//                )
-//            )
         }
     }
 
