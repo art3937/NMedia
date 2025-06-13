@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Build
+import android.view.WindowManager
 import androidx.collection.emptyLongSet
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
@@ -20,6 +21,7 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onCreate() {
         super.onCreate()
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = getString(R.string.channel_remote_name)
             val descriptionText = getString(R.string.channel_remote_description)
@@ -34,36 +36,33 @@ class FCMService : FirebaseMessagingService() {
 
 
     override fun onMessageReceived(message: RemoteMessage) {
-
-
-            message.data["action"]?.let {
-                if (it == Action.LIKE.toString() || it == Action.SHARED.toString()|| it == Action.ADDED.toString()) {
-                    when (Action.valueOf(it)) {
-                        Action.LIKE -> handleLike(
-                            Gson().fromJson(
-                                message.data["content"], Like::class.java
-                            )
+        message.data["action"]?.let {
+            if (it == Action.LIKE.toString() || it == Action.SHARED.toString()|| it == Action.ADDED.toString()) {
+                when (Action.valueOf(it)) {
+                    Action.LIKE -> handleLike(
+                        Gson().fromJson(
+                            message.data["content"], Like::class.java
                         )
+                    )
 
-                        Action.SHARED -> handleShared(
-                            Gson().fromJson(
-                                message.data["content"], Like::class.java
-                            )
+                    Action.SHARED -> handleShared(
+                        Gson().fromJson(
+                            message.data["content"], Like::class.java
                         )
+                    )
 
-                        Action.ADDED -> handleAdded(
-                            Gson().fromJson(
-                                message.data["content"], AddContent::class.java
-                            )
+                    Action.ADDED -> handleAdded(
+                        Gson().fromJson(
+                            message.data["content"], AddContent::class.java
                         )
-                    }
-                }
-                else{
-return@let
+                    )
                 }
             }
-
+            else{
+                return@let
+            }
         }
+    }
 
     override fun onNewToken(token: String) {
         println(token)
@@ -118,7 +117,7 @@ return@let
                 )
                 .setStyle(NotificationCompat.BigTextStyle()
                     .bigText(added.contentText))
-            //  .setContentText(added.contentText)
+                //  .setContentText(added.contentText)
                 .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.chebur))
                 .build()
             NotificationManagerCompat.from(this).notify(Random.nextInt(100_000), notification)

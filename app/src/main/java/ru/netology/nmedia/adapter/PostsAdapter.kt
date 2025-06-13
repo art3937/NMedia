@@ -21,6 +21,7 @@ interface OneInteractionListener {
     fun onEdit(post: Post)
     fun startActivity(url: String)
     fun startActivityPostRead(post: Post)
+    fun load()
 }
 
 
@@ -50,9 +51,9 @@ class PostViewHolder(
         binding.content.maxLines = 4
         binding.apply {
             author.text = post.author
-            published.text = post.published
+            published.text = post.published.toString()
             content.text = post.content
-            likes.text = numberFormatting.formatting(post.countLikes)
+            likes.text = numberFormatting.formatting(post.likes)
             repostButton.text = numberFormatting.formatting(post.countRepost)
             countView.text = numberFormatting.formatting(post.countViews)
             likes.isChecked = post.likedByMe
@@ -72,6 +73,7 @@ class PostViewHolder(
                     when (item.itemId) {
                         R.id.remove -> {
                             oneInteractionListener.onRemove(post)
+                            oneInteractionListener.load()
                             true
                         }
 
@@ -104,7 +106,8 @@ class PostViewHolder(
             }
         }
 
-        binding.group.setOnClickListener {
+        binding.cardPostGroup
+            .setOnClickListener {
             oneInteractionListener.startActivityPostRead(post)
         }
 
