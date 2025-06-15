@@ -2,12 +2,16 @@ package ru.netology.nmedia.repository
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.entity.PostEntity
+import java.io.IOException
 import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
 
@@ -24,16 +28,45 @@ class PostRepositoryImpl() : PostRepository {
         val postsType: Type = object : TypeToken<List<PostEntity>>() {}.type
     }
 
-    //    override fun getAll(): LiveData<List<Post>> = dao.getAll().map { list-> list.map{it.toDto()} }
-    override fun getAll(): List<Post> {
+
+//    override fun getAll(): List<Post> {
+//        val call = okHttpClient.newCall(
+//            Request.Builder()
+//                .url("$BASE_URL/api/slow/posts")
+//                .build()
+//        )
+//        val response = call.execute()
+//
+//        val responseText = response.body?.string() ?: error("Response body is null")
+//
+//        return gson.fromJson<List<PostEntity>?>(responseText, postsType).map { it.toDto() }
+//    }
+
+    override fun getAllAsync(callback: PostRepository.GetAllCallBack) {
+        println("1  ${Thread.currentThread().name}")
         val call = okHttpClient.newCall(
-            Request.Builder().url("$BASE_URL/api/slow/posts").build()
+            Request.Builder()
+                .url("$BASE_URL/api/slow/posts")
+                .build()
         )
-        val response = call.execute()
+       call.enqueue(object : Callback{
 
-        val responseText = response.body?.string() ?: error("Response body is null")
+            override fun onResponse(call: Call, response: Response) {
+                try {
+                    println("2  ${Thread.currentThread().name}")
+                    val posts = response.body?.string() ?: error("Response body is null")
+                    callback.onSuccess(
+                        gson.fromJson<List<PostEntity>?>(posts, postsType).map { it.toDto() })
+                }catch (e: Exception){
+                    callback.onError(e)
+                }
+            }
 
-        return gson.fromJson<List<PostEntity>?>(responseText, postsType).map { it.toDto() }
+            override fun onFailure(call: Call, e: IOException) {
+                callback.onError(e)
+            }
+        })
+        println("3  ${Thread.currentThread().name}")
     }
 
     override fun saveById(post: Post): Post {

@@ -61,6 +61,7 @@ dependencies {
     def room_version = "2.7.0"
     def firebase_version = "33.13.0"
     def play_services_base_version = "17.0.0"
+    def glide_version = "4.16.0"
 
     implementation libs.androidx.appcompat
     implementation libs.material
@@ -78,11 +79,10 @@ dependencies {
     implementation "com.google.android.gms:play-services-base:$play_services_base_version"
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
 
-
+    implementation "com.github.bumptech.glide:glide:$glide_version"
 
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core
-
     implementation(libs.androidx.cardview)
 
 }
