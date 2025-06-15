@@ -23,12 +23,12 @@ data class PostEntity(
         fun fromDto(post: Post) = PostEntity(
             id = post.id,
             author = post.author,
+            authorAvatar = post.authorAvatar,
             content = post.content,
             published = post.published,
             likedByMe = post.likedByMe,
             likes = post.likes,
-            authorAvatar = post.authorAvatar,
-        )
+            )
     }
 }
 

@@ -12,6 +12,7 @@ import ru.netology.nmedia.NumberFormatting
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
+import ru.netology.nmedia.imageLoad.load
 
 
 interface OneInteractionListener {
@@ -57,6 +58,8 @@ class PostViewHolder(
             repostButton.text = numberFormatting.formatting(post.countRepost)
             countView.text = numberFormatting.formatting(post.countViews)
             likes.isChecked = post.likedByMe
+            val url = "http://10.0.2.2:9999/avatars/${post.authorAvatar}"
+            avatar.load(url)
         }
 
         likes.setOnClickListener {
