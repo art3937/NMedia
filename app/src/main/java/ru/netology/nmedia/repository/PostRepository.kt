@@ -8,13 +8,13 @@ interface PostRepository {
    // fun getAll(): List<Post>
     fun likeById(id: Long,like:Boolean):Post
     fun shareById(post: Post)
-    fun removeById(id: Long):String
-    fun saveById(post: Post): Post
+    fun removeById(id: Long)
+    fun saveById(post: Post)
 
     fun getAllAsync(callback: GetAllCallBack)
 
     interface  GetAllCallBack{
         fun onSuccess(posts: List<Post>)
-        fun onError(e: Exception)
+        fun onError(e: Throwable)
     }
 }

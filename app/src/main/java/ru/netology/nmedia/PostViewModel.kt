@@ -1,7 +1,9 @@
 package ru.netology.nmedia
 
 import android.app.Application
+import android.widget.Toast
 import androidx.lifecycle.*
+import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.model.FeedModel
@@ -9,6 +11,7 @@ import ru.netology.nmedia.repository.*
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.IOException
 import kotlin.concurrent.thread
+import kotlin.coroutines.coroutineContext
 
 private val empty = Post(
     id = 0,
@@ -21,7 +24,6 @@ private val empty = Post(
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
 
-    val obj = Object()
 
     private val repository: PostRepository = PostRepositoryImpl()
     private val _data = MutableLiveData(FeedModel())
@@ -55,11 +57,11 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         _data.postValue(FeedModel(loading = true))
         repository.getAllAsync(object : PostRepository.GetAllCallBack{
             override fun onSuccess(posts: List<Post>) {
-                _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
+                _data.value = (FeedModel(posts = posts, empty = posts.isEmpty()))
             }
 
-            override fun onError(e: Exception) {
-                _data.postValue( FeedModel(error = e))
+            override fun onError(e: Throwable) {
+                _data.value =( FeedModel(error = e))
             }
 
         })
@@ -68,7 +70,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun like(id: Long, like: Boolean) {
         thread {
             val old = _data.value?.posts.orEmpty()
-//            _data.value?.posts?.forEach { if(it.id == id) like = it.likedByMe }
             try {
                 val post = repository.likeById(id, !like)
                 val res = _data.value?.posts?.let {
@@ -119,21 +120,20 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun changeContentAndSave(text: String, url: String) {
         thread {
-            edited.value?.let {
-                if (it.content != text || it.video != url) {
+            edited.value?.let { post ->
+                if (post.content != text || post.video != url) {
                     repository.saveById(
-                        it.copy(
+                        post.copy(
                             content = text,
                             video = url,
+                           // attachment = attachment
                             // published = Date()
                         )
                     )
                     _postCreated.postValue(Unit)
-
                 }
-//            edited.value = empty
-                edited.postValue(empty)
             }
+            edited.postValue(empty)
         }
     }
 }

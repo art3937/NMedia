@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
-import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
+import ru.netology.nmedia.activity.NewPostFragment.Companion.textNewPost
 import ru.netology.nmedia.databinding.ActivityAppBinding
 
 class AppActivity : AppCompatActivity() {
@@ -37,7 +37,7 @@ class AppActivity : AppCompatActivity() {
             findNavController(R.id.nav_controller).navigate(
                 R.id.action_feedFragment_to_newPostFragment,
                 Bundle().apply {
-                    textArg = text
+                    textNewPost = text
                 }
             )
         }

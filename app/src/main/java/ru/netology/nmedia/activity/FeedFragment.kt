@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -15,12 +16,14 @@ import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.R
-import ru.netology.nmedia.activity.FragmentOpenPost.Companion.text
-import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
+import ru.netology.nmedia.activity.FragmentOpenPost.Companion.textArg
+import ru.netology.nmedia.activity.NewPostFragment.Companion.text
+import ru.netology.nmedia.activity.NewPostFragment.Companion.textNewPost
 import ru.netology.nmedia.adapter.OneInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.databinding.FragmentFeedBinding
+import ru.netology.nmedia.util.StringArg
 
 class FeedFragment() : Fragment() {
 
@@ -66,7 +69,7 @@ class FeedFragment() : Fragment() {
                 findNavController().navigate(
                     R.id.action_feedFragment_to_newPostFragment,
                     Bundle().apply {
-                        textArg = post.content
+                        textNewPost = post.content
                         text = post.video
                     })
 //                newPostLauncher.launch(post.content)
@@ -78,8 +81,6 @@ class FeedFragment() : Fragment() {
             }
 
             override fun startActivityPostRead(post: Post) {
-                // viewModel.edit(post)
-
                 findNavController().navigate(
                     R.id.action_feedFragment_to_fragmentOpenPost,
                     Bundle().apply {
@@ -88,8 +89,10 @@ class FeedFragment() : Fragment() {
             }
 
             override fun load() {
-                viewModel.load()
+                viewModel.loadPosts()
             }
+
+
         })//создаю адаптер
 
         binding.list.adapter = adapter
