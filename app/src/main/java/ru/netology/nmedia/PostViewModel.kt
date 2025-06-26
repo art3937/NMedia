@@ -1,17 +1,13 @@
 package ru.netology.nmedia
 
 import android.app.Application
-import android.widget.Toast
 import androidx.lifecycle.*
-import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.*
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.IOException
 import kotlin.concurrent.thread
-import kotlin.coroutines.coroutineContext
 
 private val empty = Post(
     id = 0,
@@ -57,11 +53,15 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         _data.postValue(FeedModel(loading = true))
         repository.getAllAsync(object : PostRepository.GetAllCallBack{
             override fun onSuccess(posts: List<Post>) {
-                _data.value = (FeedModel(posts = posts, empty = posts.isEmpty()))
+                _data.value = FeedModel(posts = posts, empty = posts.isEmpty())
             }
 
-            override fun onError(e: Throwable) {
-                _data.value =( FeedModel(error = e))
+            override fun onError(e: Int) {
+                _data.value = FeedModel(error = e)
+            }
+
+            override fun onErrorServer(e: String) {
+                _data.value =( FeedModel(errorServer = e))
             }
 
         })
@@ -119,21 +119,33 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun changeContentAndSave(text: String, url: String) {
-        thread {
             edited.value?.let { post ->
                 if (post.content != text || post.video != url) {
                     repository.saveById(
                         post.copy(
                             content = text,
                             video = url,
+                           // authorAvatar = "none"
                            // attachment = attachment
                             // published = Date()
-                        )
+                            )
+                            ,object : PostRepository.GetAllCallBack{
+                            override fun onSuccess(posts: List<Post>) {
+                             //  _data.value = FeedModel(posts = posts, empty = posts.isEmpty())
+                            }
+
+                            override fun onError(e: Int) {
+                                _data.value = FeedModel(error = e)
+                            }
+
+                            override fun onErrorServer(e: String) {
+                                _data.value =( FeedModel(errorServer = e))
+                            }
+                            }
                     )
                     _postCreated.postValue(Unit)
                 }
             }
             edited.postValue(empty)
-        }
     }
 }

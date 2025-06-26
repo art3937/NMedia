@@ -13,8 +13,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
+import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.util.StringArg
+import kotlin.concurrent.thread
 
 
 class NewPostFragment() : Fragment() {
@@ -45,17 +47,11 @@ class NewPostFragment() : Fragment() {
             val content = binding.addContent.text.toString()
             val url = binding.textUrl.text.toString()
             if (!url.contains("https://")) {
-                Toast.makeText(context, "отсутствует адресc url", Toast.LENGTH_LONG).show()
+              //  Toast.makeText(context, "отсутствует адресc url", Toast.LENGTH_LONG).show()
             }
             if (content.isNotBlank() || url.isNotBlank()) {
-                viewModel.changeContentAndSave(
-                    content, url
-                    //Attachment(
-//                        "sbercard.jpg",
-//                        "Предлагают новую карту? Проверьте, не мошенничество ли это!",
-//                        AttachmentType.IMAGE
-                    //                   )
-                )
+
+                    viewModel.changeContentAndSave(content, url)
             }else{
                 Toast.makeText(context, "ничего не заполнено", Toast.LENGTH_LONG).show()
                 return@setOnClickListener

@@ -105,7 +105,7 @@ class FeedFragment() : Fragment() {
         }
 
         binding.retry.setOnClickListener{
-           viewModel.load().toString()
+           viewModel.loadPosts().toString()
         }
 
         binding.fab.setOnClickListener {

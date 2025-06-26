@@ -22,6 +22,7 @@ import ru.netology.nmedia.databinding.FragmentPostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.imageLoad.load
 import ru.netology.nmedia.util.StringArg
+import kotlin.concurrent.thread
 
 class FragmentOpenPost : Fragment() {
     override fun onCreateView(
@@ -61,12 +62,12 @@ class FragmentOpenPost : Fragment() {
 
             override fun onEdit(post: Post) {
                 viewModel.edit(post)
-                findNavController().navigate(
-                    R.id.action_fragmentOpenPost_to_newPostFragment,
-                    Bundle().apply {
-                        textNewPost = post.content
-                        text = post.video
-                    })
+                    findNavController().navigate(
+                        R.id.action_fragmentOpenPost_to_newPostFragment,
+                        Bundle().apply {
+                            textNewPost = post.content
+                            text = post.video
+                        })
 //                newPostLauncher.launch(post.content)
             }
 
@@ -93,6 +94,7 @@ class FragmentOpenPost : Fragment() {
         val posts = viewModel.data.value?.posts
 
         val postActual: Post = posts?.find { it.id == res } ?: throw Exception("body is null")
+
         binding.apply {
             post.likes.text = postActual.likes.toString()
             post.likes.isChecked = postActual.likedByMe

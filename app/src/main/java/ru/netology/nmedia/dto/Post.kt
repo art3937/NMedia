@@ -12,7 +12,7 @@ data class Post(
     val countRepost: Int = 0,
     val countViews: Int = 0,
     val video: String = "",
-    val authorAvatar: String? = null,
+    val authorAvatar: String? = "",
     var attachment: Attachment? = null,
     )
 

@@ -16,7 +16,7 @@ data class PostEntity(
     val countRepost: Int = 0,
     val countViews: Int = 0,
     val video: String = "",
-    var authorAvatar: String? = null,
+    var authorAvatar: String? = "",
     var attachment: AttachmentEmbeddable?,
 ) {
     fun toDto() =

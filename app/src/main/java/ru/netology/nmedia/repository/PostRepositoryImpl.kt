@@ -1,16 +1,12 @@
 package ru.netology.nmedia.repository
 
-import android.content.Context
-import android.widget.Toast
-import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import ru.netology.nmedia.activity.AppActivity
 import ru.netology.nmedia.api.ApiService
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.entity.PostEntity
-import kotlin.coroutines.coroutineContext
+
 
 class PostRepositoryImpl() : PostRepository {
 
@@ -23,27 +19,39 @@ class PostRepositoryImpl() : PostRepository {
 
     override fun getAllAsync(callback: PostRepository.GetAllCallBack) {
         println("1  ${Thread.currentThread().name}")
+
         ApiService.service.getAll().enqueue(object : Callback<List<PostEntity>> {
             override fun onResponse(
                 call: Call<List<PostEntity>>, response: Response<List<PostEntity>>
             ) {
                 val body = response.body() ?: run {
-                    callback.onError(RuntimeException("body is null"))
+                    callback.onError(response.code())
+                    println("Вот она ошибочка!!!!!  ${response.code()}")
                     return
                 }
                 callback.onSuccess(body.map { it.toDto() })
+                println("Вот она удачная загрузка!!!!!  ${response.code()}")
             }
 
             override fun onFailure(
                 call: Call<List<PostEntity>>, throwable: Throwable
             ) {
-                callback.onError(throwable)
+                callback.onErrorServer("Нет связи с сервером $throwable")
             }
         })
     }
 
-    override fun saveById(post: Post) {
-       ApiService.service.save(PostEntity.fromDto(post)).execute()
+    override fun saveById(post: Post, callback: PostRepository.GetAllCallBack) {
+        ApiService.service.save(PostEntity.fromDto(post)).
+        enqueue(object : Callback<PostEntity> {
+            override fun onResponse(call: Call<PostEntity>, response: Response<PostEntity>) {
+                println("Вот она удачная загрузка!!!!!  ${response.code()}")
+            }
+
+            override fun onFailure(p0: Call<PostEntity>, throwable: Throwable) {
+                callback.onErrorServer("Нет связи с сервером $throwable")
+            }
+        })
     }
 
     override fun likeById(id: Long, like: Boolean): Post {
