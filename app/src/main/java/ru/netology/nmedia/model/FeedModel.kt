@@ -17,7 +17,7 @@ data class FeedModel(
     fun errorToString(context: Context): String {
         var result = ""
         if (errorServer.isNotEmpty()) {
-            Toast.makeText(context, "Нет связи с сервером $errorServer", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, errorServer, Toast.LENGTH_LONG).show()
         }
         when (error) {
             400 -> result = context.getString(R.string.network_error)
@@ -25,7 +25,6 @@ data class FeedModel(
                 result = "Ошибка Сервера Код 500"
                 Toast.makeText(context, "Ошибка Сервера код $error", Toast.LENGTH_LONG).show()
             }
-
             else -> result = context.getString(R.string.unknown_error)
         }
         return result

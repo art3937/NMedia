@@ -50,8 +50,7 @@ class NewPostFragment() : Fragment() {
               //  Toast.makeText(context, "отсутствует адресc url", Toast.LENGTH_LONG).show()
             }
             if (content.isNotBlank() || url.isNotBlank()) {
-
-                    viewModel.changeContentAndSave(content, url)
+                viewModel.changeContentAndSave(content, url)
             }else{
                 Toast.makeText(context, "ничего не заполнено", Toast.LENGTH_LONG).show()
                 return@setOnClickListener

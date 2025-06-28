@@ -18,7 +18,7 @@ import ru.netology.nmedia.entity.PostEntity
 import java.util.concurrent.TimeUnit
 
 private val client = OkHttpClient.Builder()
-    .connectTimeout(30, TimeUnit.SECONDS)
+    .connectTimeout(20, TimeUnit.SECONDS)
     .addInterceptor(HttpLoggingInterceptor().apply {
         if(BuildConfig.DEBUG) {
             level = HttpLoggingInterceptor.Level.BODY
@@ -43,11 +43,11 @@ interface PostApi {
     @DELETE("posts/{id}")
     fun deleteById(@Path("id") id: Long): Call<Unit>
 
-//    @PostMapping("/{id}/likes")
-//    fun likeById(@PathVariable id: Long)
-//
-//    @DeleteMapping("/{id}/likes")
-//    fun unlikeById(@PathVariable id: Long)
+    @POST("posts/{id}/likes")
+    fun likeById(@Path("id") id: Long):Call<PostEntity>
+
+    @DELETE("posts/{id}/likes")
+    fun unLikeById(@Path("id") id: Long):Call<PostEntity>
 }
 
 object ApiService {

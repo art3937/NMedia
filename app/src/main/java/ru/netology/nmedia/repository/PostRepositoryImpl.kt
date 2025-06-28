@@ -41,23 +41,50 @@ class PostRepositoryImpl() : PostRepository {
         })
     }
 
-    override fun saveById(post: Post, callback: PostRepository.GetAllCallBack) {
-        ApiService.service.save(PostEntity.fromDto(post)).
-        enqueue(object : Callback<PostEntity> {
+    override fun saveById(post: Post, callback: PostRepository.GetLikeCallBack) {
+
+        ApiService.service.save(PostEntity.fromDto(post)).enqueue(object : Callback<PostEntity> {
             override fun onResponse(call: Call<PostEntity>, response: Response<PostEntity>) {
+                val body = response.body() ?: run {
+                    callback.onErrorServer("Пост не сохранился код : ${response.code()}")
+                    println("Вот она ошибочка!!!!!  ${response.code()}")
+                    return
+                }
+                callback.onSuccess(body.toDto())
                 println("Вот она удачная загрузка!!!!!  ${response.code()}")
             }
 
-            override fun onFailure(p0: Call<PostEntity>, throwable: Throwable) {
+            override fun onFailure(call: Call<PostEntity>, throwable: Throwable) {
                 callback.onErrorServer("Нет связи с сервером $throwable")
             }
+
+
         })
     }
 
-    override fun likeById(id: Long, like: Boolean): Post {
-        TODO("Not yet implemented")
-    }
+    override fun likeById(id: Long, like: Boolean, callback: PostRepository.GetLikeCallBack) {
+        var resultLike = ApiService.service.likeById(id)
+        if (!like) {
+            resultLike = ApiService.service.unLikeById(id)
+        }
+        resultLike.enqueue(object : Callback<PostEntity> {
+            override fun onResponse(call: Call<PostEntity>, response: Response<PostEntity>) {
+                val body = response.body() ?: run {
+                    callback.onErrorServer("Пост не лайкнут : ${response.code()}")
+                    println("Вот она ошибочка!!!!!  ${response.code()}")
+                    return
+                }
+                callback.onSuccess(body.toDto())
+                println("Вот она удачная загрузка!!!!!  ${response.code()}")
+            }
 
+            override fun onFailure(call: Call<PostEntity>, throwable: Throwable) {
+                callback.onErrorServer("Нет связи с сервером $throwable")
+            }
+
+
+        })
+    }
 
 //    override fun likeById(id: Long, like: Boolean): Post {
 //        val call = if (!like) {

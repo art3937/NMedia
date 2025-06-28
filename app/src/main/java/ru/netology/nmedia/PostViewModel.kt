@@ -1,21 +1,19 @@
 package ru.netology.nmedia
 
 import android.app.Application
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.FeedModel
-import ru.netology.nmedia.repository.*
+import ru.netology.nmedia.repository.PostRepository
+import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.IOException
 import kotlin.concurrent.thread
 
 private val empty = Post(
-    id = 0,
-    author = "Artemy",
-    content = "",
-    published = 0L,
-    likedByMe = false,
-    video = ""
+    id = 0, author = "Artemy", content = "", published = 0L, likedByMe = false, video = ""
 )
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
@@ -25,14 +23,14 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val _data = MutableLiveData(FeedModel())
     val data: LiveData<FeedModel>
         get() = _data
-    val edited = MutableLiveData(empty)
+    private val edited = MutableLiveData(empty)
 
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated
 
     init {
-      //  load()
+        //  load()
         loadPosts()
     }
 
@@ -49,9 +47,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 //        }
     }
 
-    fun loadPosts(){
+    fun loadPosts() {
         _data.postValue(FeedModel(loading = true))
-        repository.getAllAsync(object : PostRepository.GetAllCallBack{
+        repository.getAllAsync(object : PostRepository.GetAllCallBack {
             override fun onSuccess(posts: List<Post>) {
                 _data.value = FeedModel(posts = posts, empty = posts.isEmpty())
             }
@@ -61,46 +59,53 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onErrorServer(e: String) {
-                _data.value =( FeedModel(errorServer = e))
+                _data.value = (FeedModel(errorServer = e))
             }
 
         })
     }
 
     fun like(id: Long, like: Boolean) {
+
         thread {
             val old = _data.value?.posts.orEmpty()
             try {
-                val post = repository.likeById(id, !like)
-                val res = _data.value?.posts?.let {
-                    data.value?.posts?.map {
-                        if (it.id != post.id) it else it.copy(
-                            likedByMe = post.likedByMe,
-                            likes = post.likes
-                        )
+                repository.likeById(id, !like, object : PostRepository.GetLikeCallBack {
+                    override fun onSuccess(post: Post) {
+                        val res = _data.value?.posts?.let {
+                            data.value?.posts?.map {
+                                if (it.id != id) it else it.copy(
+                                    likedByMe = !like, likes = post.likes
+                                )
+                            }
+                        }?.let {
+                            FeedModel(posts = it)
+                        }
+                        _data.postValue(res)
                     }
-                }?.let {
-                    FeedModel(posts = it)
-                }
 
-                _data.postValue(res)
+                    override fun onError(e: Int) {
+                        _data.value = FeedModel(error = e)
+                    }
 
+                    override fun onErrorServer(e: String) {
+                        _data.value = (FeedModel(errorServer = e))
+                    }
+                })
             } catch (e: IOException) {
                 _data.postValue(_data.value?.copy(posts = old))
             }
-
         }
     }
 
     fun sharePost(post: Post) = repository.shareById(post)
+
+    
     fun removeById(id: Long) {
         thread {
             val old = _data.value?.posts.orEmpty()
-            _data.postValue(
-                _data.value?.copy(posts = _data.value?.posts.orEmpty()
-                    .filter { it.id != id }
-                )
-            )
+            _data.postValue(_data.value?.copy(
+                posts = _data.value?.posts.orEmpty().filter { it.id != id }))
             try {
                 repository.removeById(id)
             } catch (e: IOException) {
@@ -119,33 +124,32 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun changeContentAndSave(text: String, url: String) {
-            edited.value?.let { post ->
-                if (post.content != text || post.video != url) {
-                    repository.saveById(
-                        post.copy(
-                            content = text,
-                            video = url,
-                           // authorAvatar = "none"
-                           // attachment = attachment
-                            // published = Date()
-                            )
-                            ,object : PostRepository.GetAllCallBack{
-                            override fun onSuccess(posts: List<Post>) {
-                             //  _data.value = FeedModel(posts = posts, empty = posts.isEmpty())
-                            }
+        _data.postValue(FeedModel(loading = true))
+        thread {
+            edited.value?.let { it ->
+                if (it.content != text || it.video != url) {
+                    repository.saveById(it.copy(
+                        content = text,
+                        video = url,
+                        // authorAvatar = "none"
+                        // attachment = attachment
+                        // published = Date()
+                    ), object : PostRepository.GetLikeCallBack {
+                        override fun onSuccess(post: Post) {
+                            _postCreated.postValue(Unit)
+                        }
 
-                            override fun onError(e: Int) {
-                                _data.value = FeedModel(error = e)
-                            }
+                        override fun onError(e: Int) {
+                            _data.value = FeedModel(error = e)
+                        }
 
-                            override fun onErrorServer(e: String) {
-                                _data.value =( FeedModel(errorServer = e))
-                            }
-                            }
-                    )
-                    _postCreated.postValue(Unit)
+                        override fun onErrorServer(e: String) {
+                            _data.value = (FeedModel(errorServer = e))
+                        }
+                    })
                 }
             }
-            edited.postValue(empty)
+        }
+        edited.postValue(empty)
     }
 }
