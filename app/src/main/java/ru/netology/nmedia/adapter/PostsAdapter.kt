@@ -16,6 +16,7 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.imageLoad.load
 import ru.netology.nmedia.util.StringArg
+import kotlin.concurrent.thread
 import kotlin.coroutines.coroutineContext
 
 
@@ -114,8 +115,10 @@ class PostViewHolder(
             }
         }
 
-        binding.cardPostGroup
-            .setOnClickListener {
+        binding.cardPostGroup.setOnClickListener {
+
+                binding.cardPostGroup.isClickable = false
+
             oneInteractionListener.startActivityPostRead(post)
         }
 

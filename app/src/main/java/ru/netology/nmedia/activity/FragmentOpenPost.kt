@@ -2,11 +2,12 @@ package ru.netology.nmedia.activity
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.PopupMenu
+import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -17,14 +18,14 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.text
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textNewPost
 import ru.netology.nmedia.adapter.OneInteractionListener
+import ru.netology.nmedia.adapter.PostViewHolder
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.databinding.FragmentPostBinding
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.imageLoad.load
 import ru.netology.nmedia.util.StringArg
-import kotlin.concurrent.thread
 
 class FragmentOpenPost : Fragment() {
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -89,76 +90,77 @@ class FragmentOpenPost : Fragment() {
             }
 
         }
-
+        val holder = PostViewHolder(binding.post, oneInteractionListener)
         val res = arguments?.textArg?.toLong()
-        val posts = viewModel.data.value?.posts
-
-        val postActual: Post = posts?.find { it.id == res } ?: throw Exception("body is null")
-
-        binding.apply {
-            post.likes.text = postActual.likes.toString()
-            post.likes.isChecked = postActual.likedByMe
-            post.repostButton.text = postActual.countRepost.toString()
-            post.content.text = postActual.content
-            post.author.text = postActual.author
-            post.published.text = postActual.published.toString()
-            post.content.maxLines = Int.MAX_VALUE
-            val url = "http://10.0.2.2:9999/avatars/${postActual.authorAvatar}"
-            val urlImages = "http://10.0.2.2:9999/images/${postActual.attachment?.url}"
-            post.avatar.load(url, true)
-            post.video.load(urlImages, false)
+        viewModel.data.observe(viewLifecycleOwner) { feedModel ->
+            val post = feedModel.posts.find { it.id == res } ?: return@observe
+            holder.bind(post)
         }
+//        val posts = viewModel.data.value?.posts
+//
+//       val postActual: Post = posts?.find { it.id == res } ?: throw Exception("body is null")
+
+//        binding.apply {
+//            post.likes.text = postActual.likes.toString()
+//            post.likes.isChecked = postActual.likedByMe
+//            post.repostButton.text = postActual.countRepost.toString()
+//            post.content.text = postActual.content
+//            post.author.text = postActual.author
+//            post.published.text = postActual.published.toString()
+//            post.content.maxLines = Int.MAX_VALUE
+//            val url = "http://10.0.2.2:9999/avatars/${postActual.authorAvatar}"
+//            val urlImages = "http://10.0.2.2:9999/images/${postActual.attachment?.url}"
+//            post.avatar.load(url, true)
+//            post.video.load(urlImages, false)
+//        }
 
 
-        binding.apply {
-            post.likes.setOnClickListener {
-                oneInteractionListener.oneLike(postActual)
-            }
-
-            post.repostButton.setOnClickListener {
-                oneInteractionListener.onShare(postActual)
-            }
-            post.menu.setOnClickListener {
-                PopupMenu(it.context, it).apply {
-                    inflate(R.menu.post_actions)
-                    setOnMenuItemClickListener { item ->
-                        when (item.itemId) {
-                            R.id.remove -> {
-                                oneInteractionListener.onRemove(postActual)
-                                true
-                            }
-
-                            R.id.edit -> {
-                                oneInteractionListener.onEdit(postActual)
-                                true
-                            }
-
-                            else -> {
-                                false
-                            }
-                        }
-                    }
-                }.show()
-            }
-            post.video.setOnClickListener {
-                if (postActual.video.isBlank()) {
-                    oneInteractionListener.onEdit(postActual)
-                } else {
-                    oneInteractionListener.startActivity(postActual.video)
-                }
-            }
-            post.play.setOnClickListener {
-                if (postActual.video.isBlank()) {
-                    oneInteractionListener.onEdit(postActual)
-                } else {
-                    oneInteractionListener.startActivity(postActual.video)
-                }
-            }
-            viewModel.data.observe(viewLifecycleOwner) {
-                binding.post.likes.text = posts.find { it.id == res }?.likes.toString()
-                binding.post.content.text = posts.find { it.id == res }?.content.toString()
-            }
-        }
+//        binding.apply {
+//            post.likes.setOnClickListener {
+//                oneInteractionListener.oneLike(postActual)
+//            }
+//
+//            post.repostButton.setOnClickListener {
+//                oneInteractionListener.onShare(postActual)
+//            }
+//            post.menu.setOnClickListener {
+//                PopupMenu(it.context, it).apply {
+//                    inflate(R.menu.post_actions)
+//                    setOnMenuItemClickListener { item ->
+//                        when (item.itemId) {
+//                            R.id.remove -> {
+//                                oneInteractionListener.onRemove(postActual)
+//                                true
+//                            }
+//
+//                            R.id.edit -> {
+//                                oneInteractionListener.onEdit(postActual)
+//                                true
+//                            }
+//
+//                            else -> {
+//                                false
+//                            }
+//                        }
+//                    }
+//                }.show()
+//            }
+//            post.video.setOnClickListener {
+//                if (postActual.video.isBlank()) {
+//                    oneInteractionListener.onEdit(postActual)
+//                } else {
+//                    oneInteractionListener.startActivity(postActual.video)
+//                }
+//            }
+//            post.play.setOnClickListener {
+//                if (postActual.video.isBlank()) {
+//                    oneInteractionListener.onEdit(postActual)
+//                } else {
+//                    oneInteractionListener.startActivity(postActual.video)
+//                }
+//            }
+//
+//        }
         return binding.root
     }
 

@@ -66,46 +66,45 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun like(id: Long, like: Boolean) {
-
-        thread {
-            val old = _data.value?.posts.orEmpty()
-            try {
-                repository.likeById(id, !like, object : PostRepository.GetLikeCallBack {
-                    override fun onSuccess(post: Post) {
-                        val res = _data.value?.posts?.let {
-                            data.value?.posts?.map {
-                                if (it.id != id) it else it.copy(
-                                    likedByMe = !like, likes = post.likes
-                                )
-                            }
-                        }?.let {
-                            FeedModel(posts = it)
+        val old = _data.value?.posts.orEmpty()
+        try {
+            repository.likeById(id, !like, object : PostRepository.GetLikeCallBack {
+                override fun onSuccess(post: Post) {
+                    val res = _data.value?.posts?.let {
+                        data.value?.posts?.map {
+                            if (it.id != id) it else it.copy(
+                                likedByMe = !like, likes = post.likes
+                            )
                         }
-                        _data.postValue(res)
+                    }?.let {
+                        FeedModel(posts = it)
                     }
+                    _data.postValue(res)
+                }
 
-                    override fun onError(e: Int) {
-                        _data.value = FeedModel(error = e)
-                    }
+                override fun onError(e: Int) {
+                    _data.value = FeedModel(error = e)
+                }
 
-                    override fun onErrorServer(e: String) {
-                        _data.value = (FeedModel(errorServer = e))
-                    }
-                })
-            } catch (e: IOException) {
-                _data.postValue(_data.value?.copy(posts = old))
-            }
+                override fun onErrorServer(e: String) {
+                    _data.value = (FeedModel(errorServer = e))
+                }
+            })
+        } catch (e: IOException) {
+            _data.postValue(_data.value?.copy(posts = old))
         }
     }
 
     fun sharePost(post: Post) = repository.shareById(post)
 
-    
+
     fun removeById(id: Long) {
         thread {
             val old = _data.value?.posts.orEmpty()
-            _data.postValue(_data.value?.copy(
-                posts = _data.value?.posts.orEmpty().filter { it.id != id }))
+            _data.postValue(
+                _data.value?.copy(
+                    posts = _data.value?.posts.orEmpty().filter { it.id != id })
+            )
             try {
                 repository.removeById(id)
             } catch (e: IOException) {
@@ -125,7 +124,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun changeContentAndSave(text: String, url: String) {
         _data.postValue(FeedModel(loading = true))
-        thread {
             edited.value?.let { it ->
                 if (it.content != text || it.video != url) {
                     repository.saveById(it.copy(
@@ -149,7 +147,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                     })
                 }
             }
-        }
         edited.postValue(empty)
     }
 }
