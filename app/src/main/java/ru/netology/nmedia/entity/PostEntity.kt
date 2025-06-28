@@ -1,7 +1,9 @@
 package ru.netology.nmedia.entity
 
 
+import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.enumeration.AttachmentType
 
 
 data class PostEntity(
@@ -14,19 +16,36 @@ data class PostEntity(
     val countRepost: Int = 0,
     val countViews: Int = 0,
     val video: String = "",
+    var authorAvatar: String? = "",
+    var attachment: AttachmentEmbeddable?,
 ) {
     fun toDto() =
-        Post(id, author, content, published, likedByMe, likes)
+        Post(id, author, content, published, likedByMe, likes, authorAvatar = authorAvatar, attachment = attachment?.toDto())
 
     companion object {
         fun fromDto(post: Post) = PostEntity(
-            post.id,
-            post.author,
-            post.content,
-            post.published,
-            post.likedByMe,
-            post.likes
+            id = post.id,
+            author = post.author,
+            authorAvatar = post.authorAvatar,
+            content = post.content,
+            published = post.published,
+            likedByMe = post.likedByMe,
+            likes = post.likes,
+            attachment = AttachmentEmbeddable.fromDto(post.attachment)
         )
     }
 }
 
+    data class AttachmentEmbeddable(
+        var url: String,
+        var description: String?,
+        var type: AttachmentType,
+    ) {
+        fun toDto() = Attachment(url, description, type)
+
+        companion object {
+            fun fromDto(dto: Attachment?) = dto?.let {
+                AttachmentEmbeddable(it.url, it.description, it.type)
+            }
+        }
+    }
