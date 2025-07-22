@@ -52,7 +52,7 @@ class PostViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
     private val numberFormatting = NumberFormatting()
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+
     fun bind(post: Post) = with(binding) {
         binding.content.maxLines = 4
         binding.apply {

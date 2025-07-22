@@ -13,6 +13,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.R
@@ -96,17 +97,32 @@ class FeedFragment() : Fragment() {
         })//создаю адаптер
 
         binding.list.adapter = adapter
-        viewModel.data.observe(viewLifecycleOwner){state ->
-            adapter.submitList(state.posts)
-            binding.errorGroup.isVisible = state.isError
-            binding.errorText.text = state.errorToString(requireContext())
-            binding.progress.isVisible = state.loading
-            binding.empty.isVisible = state.empty
+        viewModel.data.observe(viewLifecycleOwner){data ->
+            val newPost = adapter.currentList.size < data.posts.size
+            adapter.submitList(data.posts) {
+                if (newPost) {
+                    binding.list.scrollToPosition(0)//скролю вверх если новый пост
+                }
+            }
+            binding.empty.isVisible = data.empty
         }
 
-        binding.retry.setOnClickListener{
-           viewModel.loadPosts().toString()
+        viewModel.state.observe(viewLifecycleOwner){state ->
+            binding.progress.isVisible = state.loading
+if (state.error) {
+    Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_INDEFINITE)
+        .setAction(R.string.retry) {
+            viewModel.loadPosts()
         }
+        .show()
+}
+            binding.swipeRefreshLayout.isRefreshing = state.refreshing
+        }
+
+binding.swipeRefreshLayout.setOnRefreshListener {
+    viewModel.refresh()
+}
+
 
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)

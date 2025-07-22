@@ -44,6 +44,7 @@ class NewPostFragment() : Fragment() {
             viewModel.loadPosts()
         }
         binding.ok.setOnClickListener {
+            findNavController().navigateUp()
             val content = binding.addContent.text.toString()
             val url = binding.textUrl.text.toString()
             if (!url.contains("https://")) {
@@ -51,6 +52,7 @@ class NewPostFragment() : Fragment() {
             }
             if (content.isNotBlank() || url.isNotBlank()) {
                 viewModel.changeContentAndSave(content, url)
+                findNavController().navigateUp()
             }else{
                 Toast.makeText(context, "ничего не заполнено", Toast.LENGTH_LONG).show()
                 return@setOnClickListener

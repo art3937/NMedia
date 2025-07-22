@@ -25,7 +25,6 @@ import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.util.StringArg
 
 class FragmentOpenPost : Fragment() {
-    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -78,11 +77,6 @@ class FragmentOpenPost : Fragment() {
             }
 
             override fun startActivityPostRead(post: Post) {
-                findNavController().navigate(
-                    R.id.action_feedFragment_to_fragmentOpenPost,
-                    Bundle().apply {
-                        textArg = post.id.toString()
-                    })
             }
 
             override fun load() {

@@ -14,7 +14,9 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.BuildConfig.BASE_URL
+import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.entity.PostEntity
+import ru.netology.nmedia.entity.PostEntity2
 import java.util.concurrent.TimeUnit
 
 private val client = OkHttpClient.Builder()
@@ -35,19 +37,19 @@ private val retrofit = Retrofit.Builder()
 
 interface PostApi {
     @GET("posts")
-    fun getAll(): Call<List<PostEntity>>
+   suspend fun getAll(): List<Post>
 
     @POST("posts")
-    fun save(@Body post: PostEntity): Call<PostEntity>
+    suspend fun save(@Body post: PostEntity2): PostEntity2
 
     @DELETE("posts/{id}")
-    fun deleteById(@Path("id") id: Long): Call<Unit>
+    suspend fun deleteById(@Path("id") id: Long)
 
     @POST("posts/{id}/likes")
-    fun likeById(@Path("id") id: Long):Call<PostEntity>
+    suspend fun likeById(@Path("id") id: Long): PostEntity2
 
     @DELETE("posts/{id}/likes")
-    fun unLikeById(@Path("id") id: Long):Call<PostEntity>
+    suspend fun unLikeById(@Path("id") id: Long): PostEntity2
 }
 
 object ApiService {
