@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -12,8 +13,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
+import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.util.StringArg
+import kotlin.concurrent.thread
 
 
 class NewPostFragment() : Fragment() {
@@ -31,25 +34,29 @@ class NewPostFragment() : Fragment() {
             insets
         }
 
-        //val text = intent.getStringExtra(Intent.EXTRA_TEXT)
-        // binding.addContent.setText(text)
         binding.addContent.requestFocus()
-        arguments?.textArg?.let(binding.addContent::setText)
+        arguments?.textNewPost?.let(binding.addContent::setText)
         arguments?.text?.let(binding.textUrl::setText)
 
-        viewModel.postCreated.observe(viewLifecycleOwner){
+        viewModel.postCreated.observe(viewLifecycleOwner) {
             AndroidUtils.hideKeyboard(requireView())
             findNavController().navigateUp()
-            viewModel.load()
+            viewModel.loadPosts()
         }
         binding.ok.setOnClickListener {
+            findNavController().navigateUp()
             val content = binding.addContent.text.toString()
             val url = binding.textUrl.text.toString()
-
+            if (!url.contains("https://")) {
+              //  Toast.makeText(context, "отсутствует адресc url", Toast.LENGTH_LONG).show()
+            }
             if (content.isNotBlank() || url.isNotBlank()) {
                 viewModel.changeContentAndSave(content, url)
+                findNavController().navigateUp()
+            }else{
+                Toast.makeText(context, "ничего не заполнено", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
             }
-
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
@@ -63,7 +70,7 @@ class NewPostFragment() : Fragment() {
     }
 
     companion object {
-        var Bundle.textArg by StringArg
+        var Bundle.textNewPost by StringArg
         var Bundle.text by StringArg
     }
 }

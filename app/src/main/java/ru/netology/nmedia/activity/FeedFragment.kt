@@ -6,21 +6,25 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.R
-import ru.netology.nmedia.activity.FragmentOpenPost.Companion.text
-import ru.netology.nmedia.activity.NewPostFragment.Companion.textArg
+import ru.netology.nmedia.activity.FragmentOpenPost.Companion.textArg
+import ru.netology.nmedia.activity.NewPostFragment.Companion.text
+import ru.netology.nmedia.activity.NewPostFragment.Companion.textNewPost
 import ru.netology.nmedia.adapter.OneInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.databinding.FragmentFeedBinding
+import ru.netology.nmedia.util.StringArg
 
 class FeedFragment() : Fragment() {
 
@@ -66,7 +70,7 @@ class FeedFragment() : Fragment() {
                 findNavController().navigate(
                     R.id.action_feedFragment_to_newPostFragment,
                     Bundle().apply {
-                        textArg = post.content
+                        textNewPost = post.content
                         text = post.video
                     })
 //                newPostLauncher.launch(post.content)
@@ -78,8 +82,6 @@ class FeedFragment() : Fragment() {
             }
 
             override fun startActivityPostRead(post: Post) {
-                // viewModel.edit(post)
-
                 findNavController().navigate(
                     R.id.action_feedFragment_to_fragmentOpenPost,
                     Bundle().apply {
@@ -88,22 +90,39 @@ class FeedFragment() : Fragment() {
             }
 
             override fun load() {
-                viewModel.load()
+                viewModel.loadPosts()
             }
+
+
         })//создаю адаптер
 
         binding.list.adapter = adapter
-        viewModel.data.observe(viewLifecycleOwner){state ->
-            adapter.submitList(state.posts)
-            binding.errorGroup.isVisible = state.isError
-            binding.errorText.text = state.errorToString(requireContext())
-            binding.progress.isVisible = state.loading
-            binding.empty.isVisible = state.empty
+        viewModel.data.observe(viewLifecycleOwner){data ->
+            val newPost = adapter.currentList.size < data.posts.size
+            adapter.submitList(data.posts) {
+                if (newPost) {
+                    binding.list.scrollToPosition(0)//скролю вверх если новый пост
+                }
+            }
+            binding.empty.isVisible = data.empty
         }
 
-        binding.retry.setOnClickListener{
-           viewModel.load().toString()
+        viewModel.state.observe(viewLifecycleOwner){state ->
+            binding.progress.isVisible = state.loading
+if (state.error) {
+    Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_INDEFINITE)
+        .setAction(R.string.retry) {
+            viewModel.loadPosts()
         }
+        .show()
+}
+            binding.swipeRefreshLayout.isRefreshing = state.refreshing
+        }
+
+binding.swipeRefreshLayout.setOnRefreshListener {
+    viewModel.refresh()
+}
+
 
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
