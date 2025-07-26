@@ -4,6 +4,7 @@ package ru.netology.nmedia.api
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
@@ -20,7 +21,7 @@ import ru.netology.nmedia.entity.PostEntity2
 import java.util.concurrent.TimeUnit
 
 private val client = OkHttpClient.Builder()
-    .connectTimeout(20, TimeUnit.SECONDS)
+    .connectTimeout(30, TimeUnit.SECONDS)
     .addInterceptor(HttpLoggingInterceptor().apply {
         if(BuildConfig.DEBUG) {
             level = HttpLoggingInterceptor.Level.BODY
@@ -37,7 +38,7 @@ private val retrofit = Retrofit.Builder()
 
 interface PostApi {
     @GET("posts")
-   suspend fun getAll(): List<Post>
+   suspend fun getAll():Response<List<Post>>
 
     @POST("posts")
     suspend fun save(@Body post: PostEntity2): PostEntity2
@@ -50,6 +51,9 @@ interface PostApi {
 
     @DELETE("posts/{id}/likes")
     suspend fun unLikeById(@Path("id") id: Long): PostEntity2
+
+    @GET("posts/{id}/newer")
+    suspend fun getNewer(@Path("id") id: Long):Response<List<Post>>
 }
 
 object ApiService {

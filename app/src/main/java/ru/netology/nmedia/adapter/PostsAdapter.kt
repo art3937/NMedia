@@ -64,7 +64,7 @@ class PostViewHolder(
             countView.text = numberFormatting.formatting(post.countViews)
             likes.isChecked = post.likedByMe
             val url = "http://10.0.2.2:9999/avatars/${post.authorAvatar}"
-            val urlImages = "http://10.0.2.2:9999/images/${post.attachment?.url}"
+            val urlImages = "http://10.0.2.2:9999/api/slow/images/${post.attachment?.url}"
             video.load(urlImages,false)
             avatar.load(url,true)
         }
