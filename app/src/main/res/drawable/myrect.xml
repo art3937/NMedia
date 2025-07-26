@@ -44,20 +44,20 @@
                 android:right="2dp"
                 android:top="2dp" />
 
-            <solid android:color="#20FF46A9" />
+            <solid android:color="#88b9ff" />
             <corners android:radius="15dp" />
         </shape>
     </item>
 
     <item>
-        <shape>
+        <shape android:layout_width="wrap_content">
             <padding
                 android:bottom="2dp"
                 android:left="2dp"
                 android:right="2dp"
                 android:top="2dp" />
 
-            <solid android:color="#25FF46A9" />
+            <solid android:color="#88b9ff" />
             <corners android:radius="15dp" />
         </shape>
     </item>
