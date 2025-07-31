@@ -9,6 +9,7 @@ import ru.netology.nmedia.enumeration.AttachmentType
 data class PostEntity2(
     val id: Long,
     val author: String,
+    var authorAvatar: String? = "",
     val content: String,
     val published: Long,
     val likedByMe: Boolean = false,
@@ -16,11 +17,10 @@ data class PostEntity2(
     val countRepost: Int = 0,
     val countViews: Int = 0,
     val video: String = "",
-    var authorAvatar: String? = "",
     var attachment: AttachmentEmbeddable?,
 ) {
     fun toDto() =
-        Post(id, author, content, published, likedByMe, likes, authorAvatar = authorAvatar, attachment = attachment?.toDto())
+        Post(id, author, authorAvatar = authorAvatar, content, published, likedByMe, likes, attachment = attachment?.toDto())
 
     companion object {
         fun fromDto(post: Post) = PostEntity2(
@@ -49,3 +49,4 @@ data class PostEntity2(
             }
         }
     }
+fun List<Post>.fromDtoToEntity2() = map{PostEntity2.fromDto(it)}

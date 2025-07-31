@@ -44,6 +44,7 @@
     />
 
 
+
     <TextView
         android:id="@+id/empty"
         android:text="@string/empty"
@@ -54,6 +55,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
+
+ <Button
+     android:id="@+id/baseline_north"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_marginTop="@dimen/padding_size"
+     tools:visibility="visible"
+     android:drawableLeft="@drawable/baseline_north_24"
+     android:visibility="gone"
+
+     app:layout_constraintEnd_toEndOf="parent"
+     app:layout_constraintStart_toStartOf="parent"
+     app:layout_constraintTop_toTopOf="parent"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
