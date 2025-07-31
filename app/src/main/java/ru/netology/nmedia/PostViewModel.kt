@@ -141,4 +141,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+     fun loadDaoNewPost(){
+         viewModelScope.launch {
+             repository.show()
+         }
+    }
 }

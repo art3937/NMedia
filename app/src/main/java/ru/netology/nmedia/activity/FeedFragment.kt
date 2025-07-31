@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.delay
 import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.FragmentOpenPost.Companion.textArg
@@ -95,12 +96,12 @@ class FeedFragment() : Fragment() {
 
         binding.list.adapter = adapter
         viewModel.data.observe(viewLifecycleOwner){data ->
-            //   val newPost = adapter.currentList.size < data.posts.size
-            adapter.submitList(data.posts)
-//                if (newPost) {
-//                    binding.list.scrollToPosition(0)//скролю вверх если новый пост
-//                }
-//            }
+               val newPost = adapter.currentList.size < data.posts.size
+            adapter.submitList(data.posts.filter { it.showPost }) {
+                if (newPost) {
+                    binding.list.scrollToPosition(0)//скролю вверх если новый пост
+                }
+            }
             binding.empty.isVisible = data.empty
         }
 
@@ -118,6 +119,7 @@ if (state.error) {
 
 binding.swipeRefreshLayout.setOnRefreshListener {
     viewModel.refresh()
+    binding.baselineNorth.isVisible = false
 }
 
         viewModel.newerCount.observe(viewLifecycleOwner) {
@@ -129,12 +131,11 @@ binding.swipeRefreshLayout.setOnRefreshListener {
         }
 
         binding.baselineNorth.setOnClickListener {
-            binding.list.scrollToPosition(0)//скролю вверх если новый пост
+       viewModel.loadDaoNewPost()
             binding.baselineNorth.isVisible = false
         }
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
-            //  newPostLauncher.launch("")
         }
         return binding.root
     }

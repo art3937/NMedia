@@ -1,5 +1,6 @@
 package ru.netology.nmedia.repository
 
+import androidx.lifecycle.asLiveData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -14,6 +15,7 @@ import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.entity.PostEntity2
 import ru.netology.nmedia.entity.fromDtoToEntity
+import ru.netology.nmedia.entity.fromDtoToEntity2
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.AppError
 import ru.netology.nmedia.error.NetworkError
@@ -22,8 +24,8 @@ import java.io.IOException
 
 
 class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
-
-    override val data = dao.getAll().map { it.map { it.toDto() } }
+private var newPosts: List<Post> = emptyList()
+    override val data = dao.getAll().map { it.map { it.copy(showPost = true).toDto() } }
 
     override suspend fun getAllAsync() {
         try {
@@ -82,12 +84,17 @@ val response = ApiService.service.save(PostEntity2.fromDto(post)).toDto()
             }
 
             val body = response.body() ?: throw ApiError(response.code(), response.message())
-            dao.insert(body.fromDtoToEntity())
+          body.map { it.showPost = false }
+            newPosts = body
             emit(body.size)
         }
     }.catch {
         e -> throw  AppError.from(e)
     }
 
-
+    override suspend fun show(){
+    newPosts.map { it.showPost = true }
+    dao.insert(newPosts.fromDtoToEntity())
+        newPosts = emptyList()
+}
 }

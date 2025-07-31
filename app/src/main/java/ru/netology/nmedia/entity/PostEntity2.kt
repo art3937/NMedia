@@ -49,3 +49,4 @@ data class PostEntity2(
             }
         }
     }
+fun List<Post>.fromDtoToEntity2() = map{PostEntity2.fromDto(it)}
