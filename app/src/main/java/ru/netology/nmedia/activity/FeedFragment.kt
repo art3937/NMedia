@@ -97,7 +97,7 @@ class FeedFragment() : Fragment() {
         binding.list.adapter = adapter
         viewModel.data.observe(viewLifecycleOwner){data ->
                val newPost = adapter.currentList.size < data.posts.size
-            adapter.submitList(data.posts.filter { it.showPost }) {
+            adapter.submitList(data.posts) {
                 if (newPost) {
                     binding.list.scrollToPosition(0)//скролю вверх если новый пост
                 }
@@ -134,6 +134,7 @@ binding.swipeRefreshLayout.setOnRefreshListener {
        viewModel.loadDaoNewPost()
             binding.baselineNorth.isVisible = false
         }
+
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
         }

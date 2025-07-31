@@ -25,7 +25,7 @@ import java.io.IOException
 
 class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 private var newPosts: List<Post> = emptyList()
-    override val data = dao.getAll().map { it.map { it.copy(showPost = true).toDto() } }
+    override val data = dao.getAll().map { it.map { it.toDto() } }
 
     override suspend fun getAllAsync() {
         try {
@@ -84,16 +84,14 @@ val response = ApiService.service.save(PostEntity2.fromDto(post)).toDto()
             }
 
             val body = response.body() ?: throw ApiError(response.code(), response.message())
-          body.map { it.showPost = false }
             newPosts = body
-            emit(body.size)
+            emit(newPosts.size)
         }
     }.catch {
         e -> throw  AppError.from(e)
     }
 
     override suspend fun show(){
-    newPosts.map { it.showPost = true }
     dao.insert(newPosts.fromDtoToEntity())
         newPosts = emptyList()
 }
