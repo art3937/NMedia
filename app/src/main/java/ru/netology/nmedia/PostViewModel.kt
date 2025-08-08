@@ -1,6 +1,7 @@
 package ru.netology.nmedia
 
 import android.app.Application
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
@@ -18,15 +19,17 @@ import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.entity.fromDtoToEntity
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.model.FeedModelState
+import ru.netology.nmedia.model.PhotoModel
 import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.util.SingleLiveEvent
+import java.io.File
 import java.io.IOException
 import java.time.OffsetDateTime
 import kotlin.concurrent.thread
 
 private val empty = Post(
-    id = 0, author = "Artemy", content = "", published = 0L, likedByMe = false, video = ""
+    id = 0, author = "Artemy", content = "", published = 0L, likedByMe = false, authorAvatar = "netology.jpg"
 )
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
@@ -43,6 +46,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
      }
          .catch { it.stackTraceToString()}
          .asLiveData()
+
+    private val _photo = MutableLiveData<PhotoModel?>(null)
+    val photo: LiveData<PhotoModel?>
+        get() = _photo
 
     val newerCount = data.switchMap {
         repository.getNewer(it.posts.firstOrNull()?.id ?: 0)
@@ -103,20 +110,15 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
 
 
-    fun changeContentAndSave(text: String, url: String) {
+    fun changeContentAndSave(text: String) {
        _state.postValue(FeedModelState(loading = true))
         viewModelScope.launch {
             try {
                 edited.value?.let { it ->
-                    if (it.content != text || it.video != url) {
+                    if (it.content != text) {
                         repository.saveById(
-                            it.copy(
-                                content = text,
-                                video = url,
-                                // authorAvatar = "none"
-                                // attachment = attachment
-                                // published = Date()
-                            )
+                            it.copy(content = text),
+                            _photo.value?.file
                         )
                     }
                 }
@@ -142,9 +144,17 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-     fun loadDaoNewPost(){
+     fun loadDaoNewPost() {
          viewModelScope.launch {
              repository.show()
          }
-    }
+     }
+
+         fun savePhoto(uri: Uri, file: File) {
+             _photo.value = PhotoModel(uri, file)
+         }
+
+         fun removePhoto(){
+             _photo.value = null
+         }
 }

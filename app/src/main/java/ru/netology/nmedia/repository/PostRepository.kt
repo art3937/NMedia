@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import com.google.android.datatransport.runtime.scheduling.jobscheduling.SchedulerConfig.Flag
 import kotlinx.coroutines.flow.Flow
 import ru.netology.nmedia.dto.Post
+import java.io.File
 
 interface PostRepository {
     // fun getAll(): List<Post>
@@ -12,7 +13,7 @@ interface PostRepository {
     suspend fun likeById(id: Long, like: Boolean)
     suspend fun shareById(post: Post)
     suspend fun removeById(id: Long)
-    suspend fun saveById(post: Post): Post
+    suspend fun saveById(post: Post, photo: File?): Post
 suspend fun show()
     suspend fun getAllAsync()
 }

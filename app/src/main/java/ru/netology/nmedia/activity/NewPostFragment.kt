@@ -6,18 +6,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toFile
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.github.dhaval2404.imagepicker.ImagePicker
 import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
-import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.util.StringArg
-import kotlin.concurrent.thread
 
+
+private const val MAX_SIZE = 2040
 
 class NewPostFragment() : Fragment() {
     override fun onCreateView(
@@ -34,30 +39,74 @@ class NewPostFragment() : Fragment() {
             insets
         }
 
+        val imagePickerLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                if (it.resultCode == ImagePicker.RESULT_ERROR) {
+                    Toast.makeText(requireContext(), "Image picker error", Toast.LENGTH_SHORT)
+                        .show()
+                    return@registerForActivityResult
+                }
+
+                val uri = it.data?.data ?: return@registerForActivityResult
+                viewModel.savePhoto(uri, uri.toFile())
+
+            }
+
         binding.addContent.requestFocus()
         arguments?.textNewPost?.let(binding.addContent::setText)
-        arguments?.text?.let(binding.textUrl::setText)
+        // arguments?.text?.let(binding.textUrl::setText)
 
         viewModel.postCreated.observe(viewLifecycleOwner) {
             AndroidUtils.hideKeyboard(requireView())
             findNavController().navigateUp()
             viewModel.loadPosts()
         }
+
+
+
         binding.ok.setOnClickListener {
             findNavController().navigateUp()
             val content = binding.addContent.text.toString()
-            val url = binding.textUrl.text.toString()
-            if (!url.contains("https://")) {
-              //  Toast.makeText(context, "отсутствует адресc url", Toast.LENGTH_LONG).show()
-            }
-            if (content.isNotBlank() || url.isNotBlank()) {
-                viewModel.changeContentAndSave(content, url)
+            //  val url = binding.textUrl.text.toString()
+            if (content.isNotBlank()) {
+                viewModel.changeContentAndSave(content)
                 findNavController().navigateUp()
-            }else{
+            } else {
                 Toast.makeText(context, "ничего не заполнено", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
         }
+
+        binding.takePhoto.setOnClickListener{
+            ImagePicker.with(this)
+                .crop()
+                .maxResultSize(MAX_SIZE, MAX_SIZE)
+                .cameraOnly()
+                .createIntent(imagePickerLauncher::launch)
+        }
+
+        binding.openGallery.setOnClickListener {
+            ImagePicker.with(this)
+                .crop()
+                .maxResultSize(MAX_SIZE, MAX_SIZE)
+                .galleryOnly()
+                .createIntent(imagePickerLauncher::launch)
+        }
+
+        binding.remove.setOnClickListener {
+            viewModel.removePhoto()
+        }
+
+viewModel.photo.observe(viewLifecycleOwner){photo ->
+    if(photo == null){
+        binding.photoContainer.isGone = true
+        return@observe
+    }
+
+    binding.photoContainer.isVisible = true
+    binding.photo.setImageURI(photo.uri)
+}
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {

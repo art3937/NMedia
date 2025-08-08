@@ -66,12 +66,11 @@ class FragmentOpenPost : Fragment() {
                         R.id.action_fragmentOpenPost_to_newPostFragment,
                         Bundle().apply {
                             textNewPost = post.content
-                            text = post.video
                         })
 //                newPostLauncher.launch(post.content)
             }
 
-            override fun startActivity(url: String) {
+            override fun startActivity(url: String?) {
                 val openPage = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                 startActivity(openPage);
             }
