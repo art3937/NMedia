@@ -1,9 +1,7 @@
 package ru.netology.nmedia.imageLoad
 
 import android.widget.ImageView
-import androidx.core.net.toUri
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import ru.netology.nmedia.R
 
 

@@ -39,6 +39,8 @@ class NewPostFragment() : Fragment() {
             insets
         }
 
+        viewModel.removePhoto()
+
         val imagePickerLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
                 if (it.resultCode == ImagePicker.RESULT_ERROR) {

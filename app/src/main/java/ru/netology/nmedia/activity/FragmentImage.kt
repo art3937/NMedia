@@ -29,11 +29,9 @@ class FragmentImage : Fragment() {
             insets
         }
 
-
         val res = arguments?.textImage
         val urlImages = "http://10.0.2.2:9999/media/$res"
         binding.photo.load(urlImages, false)
-
         return binding.root
     }
 

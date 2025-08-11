@@ -1,23 +1,19 @@
 package ru.netology.nmedia.adapter
 
 import android.os.Build
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.NumberFormatting
-import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
+import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.imageLoad.load
-import ru.netology.nmedia.util.StringArg
-import kotlin.concurrent.thread
-import kotlin.coroutines.coroutineContext
 
 
 interface OneInteractionListener {
@@ -65,8 +61,12 @@ class PostViewHolder(
             likes.isChecked = post.likedByMe
             val url = "http://10.0.2.2:9999/avatars/${post.authorAvatar}"
             val urlImages = "http://10.0.2.2:9999/media/${post.attachment?.url}"
-            video.load(urlImages,false)
-            avatar.load(url,true)
+            avatar.load(url, true)
+
+            if (!post.attachment?.url.isNullOrBlank()) {
+                image.load(urlImages, false)
+                image.isVisible = true
+            }
         }
 
         likes.setOnClickListener {
@@ -100,25 +100,9 @@ class PostViewHolder(
         }
 
 
-        binding.video.setOnClickListener {
+        binding.image.setOnClickListener {
             val urlImage = post.attachment?.url
-
-                oneInteractionListener.startActivity(urlImage)
-
-        }
-//        binding.play.setOnClickListener {
-//            if (post.video.isBlank()) {
-//                oneInteractionListener.onEdit(post)
-//            } else {
-//                oneInteractionListener.startActivity(post.video)
-//            }
-//        }
-
-        binding.cardPostGroup.setOnClickListener {
-
-                binding.cardPostGroup.isClickable = false
-
-            oneInteractionListener.startActivityPostRead(post)
+            oneInteractionListener.startActivity(urlImage)
         }
 
         binding.content.setOnClickListener() {

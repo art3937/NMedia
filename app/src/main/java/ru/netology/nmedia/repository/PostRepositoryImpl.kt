@@ -24,7 +24,7 @@ import java.io.IOException
 
 
 class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
-private var newPosts: List<Post> = emptyList()
+    private var newPosts: List<Post> = emptyList()
     override val data = dao.getAll().map { it.map { it.toDto() } }
 
     override suspend fun getAllAsync() {
@@ -43,7 +43,7 @@ private var newPosts: List<Post> = emptyList()
         }
     }
 
-    override suspend fun likeById(id: Long, like: Boolean){
+    override suspend fun likeById(id: Long, like: Boolean) {
         dao.likeById(id)
         try {
             if (!like) {
@@ -51,10 +51,9 @@ private var newPosts: List<Post> = emptyList()
             } else {
                 ApiService.service.unLikeById(id).toDto()
             }
-        }
-        catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
-           // dao.likeById(id)
+            // dao.likeById(id)
         }
     }
 
@@ -68,16 +67,16 @@ private var newPosts: List<Post> = emptyList()
 
     }
 
-    override suspend fun saveById(post: Post,photo: File?): Post {
+    override suspend fun saveById(post: Post, photo: File?): Post {
 
         val media = photo?.let { saveMedia(it) }
         val postWithAttachment = media?.let {
             post.copy(
-                attachment = Attachment(it.id,AttachmentType.IMAGE)
+                attachment = Attachment(it.id, AttachmentType.IMAGE)
             )
         } ?: post
 
-val response = ApiService.service.save(PostEntity.fromDto(postWithAttachment))
+        val response = ApiService.service.save(PostEntity.fromDto(postWithAttachment))
         if (!response.isSuccessful) {
             throw ApiError(response.code(), response.message())
         }
@@ -89,33 +88,33 @@ val response = ApiService.service.save(PostEntity.fromDto(postWithAttachment))
     }
 
     private suspend fun saveMedia(file: File): Media =
-ApiService.service.uploadFile(MultipartBody.Part.createFormData(
-    "file",
-    file.name,
-    file.asRequestBody()
-    )
-)
+        ApiService.service.uploadFile(
+            MultipartBody.Part.createFormData(
+                "file",
+                file.name,
+                file.asRequestBody()
+            )
+        )
 
 
     override fun getNewer(id: Long): Flow<Int> = flow {
 
         while (true) {
-            delay(100000000_000)
+            delay(1_000)
             val response = ApiService.service.getNewer(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
 
-          //  val body = response.body() ?: throw ApiError(response.code(), response.message())
             newPosts = response.body() ?: throw ApiError(response.code(), response.message())
             emit(newPosts.size)
         }
-    }.catch {
-        e -> throw  AppError.from(e)
+    }.catch { e ->
+        throw AppError.from(e)
     }
 
-    override suspend fun show(){
-    dao.insert(newPosts.fromDtoToEntity())
+    override suspend fun show() {
+        dao.insert(newPosts.fromDtoToEntity())
         newPosts = emptyList()
-}
+    }
 }
