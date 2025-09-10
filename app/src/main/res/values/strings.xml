@@ -33,5 +33,10 @@
     <string name="description_photo">description_photo</string>
     <string name="description_select_photo" />
     <string name="description_take_photo" />
+    <string name="sign_in">Sign in</string>
+    <string name="sign_up">Sidn up</string>
+    <string name="logout">Logout</string>
+    <string name="login">Login</string>
+    <string name="password">password</string>
 
 </resources>

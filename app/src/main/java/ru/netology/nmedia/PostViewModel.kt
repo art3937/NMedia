@@ -2,21 +2,19 @@ package ru.netology.nmedia
 
 import android.app.Application
 import android.net.Uri
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.entity.fromDtoToEntity
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.model.FeedModelState
 import ru.netology.nmedia.model.PhotoModel
@@ -24,12 +22,10 @@ import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.File
-import java.io.IOException
-import java.time.OffsetDateTime
-import kotlin.concurrent.thread
 
 private val empty = Post(
     id = 0,
+    authorId = 0,
     author = "Artemy",
     content = "",
     published = 0L,
@@ -43,11 +39,13 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PostRepository = PostRepositoryImpl(
         AppDb.getInstance(application).postDao()
     )
-    val data: LiveData<FeedModel> = repository.data.map {
-        FeedModel(
-            posts = it,
-            empty = it.isEmpty()
-        )
+    val data: LiveData<FeedModel> = AppAuth.getInstance().state.flatMapLatest { token ->
+        repository.data.map { posts ->
+            FeedModel(
+                posts = posts.map { post -> post.copy(ownerByMe = token?.id == post.authorId) },
+                empty = posts.isEmpty()
+            )
+        }
     }
         .catch { it.stackTraceToString() }
         .asLiveData()
@@ -153,7 +151,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun savePhoto(uri: Uri , file: File) {
+    fun savePhoto(uri: Uri, file: File) {
         _photo.value = PhotoModel(uri, file)
     }
 

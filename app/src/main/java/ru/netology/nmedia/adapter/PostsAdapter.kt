@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -62,11 +63,17 @@ class PostViewHolder(
             val url = "http://10.0.2.2:9999/avatars/${post.authorAvatar}"
             val urlImages = "http://10.0.2.2:9999/media/${post.attachment?.url}"
             avatar.load(url, true)
-
+            image.isGone = true
             if (!post.attachment?.url.isNullOrBlank()) {
-                image.load(urlImages, false)
-                image.isVisible = true
+                image.isVisible = if (!post.attachment?.url.isNullOrBlank()) {
+                    image.load(urlImages, false)
+                    true
+                } else {
+                    false
+                }
             }
+
+            menu.isVisible = post.ownerByMe
         }
 
         likes.setOnClickListener {

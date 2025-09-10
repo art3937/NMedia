@@ -7,11 +7,14 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toFile
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -32,7 +35,6 @@ class NewPostFragment() : Fragment() {
     ): View? {
         val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
         val binding = FragmentNewPostBinding.inflate(inflater, container, false)
-
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -69,7 +71,6 @@ class NewPostFragment() : Fragment() {
         binding.ok.setOnClickListener {
             findNavController().navigateUp()
             val content = binding.addContent.text.toString()
-            //  val url = binding.textUrl.text.toString()
             if (content.isNotBlank()) {
                 viewModel.changeContentAndSave(content)
                 findNavController().navigateUp()
@@ -119,6 +120,8 @@ viewModel.photo.observe(viewLifecycleOwner){photo ->
             })
         return binding.root
     }
+
+
 
     companion object {
         var Bundle.textNewPost by StringArg
