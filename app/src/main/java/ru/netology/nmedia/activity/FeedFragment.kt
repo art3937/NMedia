@@ -1,23 +1,24 @@
 package ru.netology.nmedia.activity
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.delay
 import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.R
+import ru.netology.nmedia.activity.FragmentImage.Companion.textImage
 import ru.netology.nmedia.activity.FragmentOpenPost.Companion.textArg
-import ru.netology.nmedia.activity.NewPostFragment.Companion.text
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textNewPost
 import ru.netology.nmedia.adapter.OneInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
@@ -69,14 +70,18 @@ class FeedFragment() : Fragment() {
                     R.id.action_feedFragment_to_newPostFragment,
                     Bundle().apply {
                         textNewPost = post.content
-                        text = post.video
                     })
 //                newPostLauncher.launch(post.content)
             }
 
-            override fun startActivity(url: String) {
-                val openPage = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                startActivity(openPage);
+            override fun startActivity(url: String?) {
+              //  val openPage = Intent(Intent.CATEGORY_APP_GALLERY,url)
+             //   startActivity(openPage);
+                findNavController().navigate(
+                    R.id.action_feedFragment_to_fragmentImage,Bundle().apply {
+                        textImage = url
+                    }
+                )
             }
 
             override fun startActivityPostRead(post: Post) {
@@ -125,7 +130,7 @@ binding.swipeRefreshLayout.setOnRefreshListener {
         viewModel.newerCount.observe(viewLifecycleOwner) {
             println(it)
             if (it > 0) {
-                binding.baselineNorth.text = "К новым"
+                binding.baselineNorth.text = "К  ${it}"
                 binding.baselineNorth.isVisible = true
             }
         }
@@ -139,6 +144,21 @@ binding.swipeRefreshLayout.setOnRefreshListener {
             findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
         }
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (activity as AppCompatActivity).supportActionBar?.show()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        (activity as AppCompatActivity).supportActionBar?.hide()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as AppCompatActivity).supportActionBar?.show()
     }
 
 }

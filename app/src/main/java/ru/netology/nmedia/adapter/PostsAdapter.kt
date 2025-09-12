@@ -1,23 +1,20 @@
 package ru.netology.nmedia.adapter
 
 import android.os.Build
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.NumberFormatting
-import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
+import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.imageLoad.load
-import ru.netology.nmedia.util.StringArg
-import kotlin.concurrent.thread
-import kotlin.coroutines.coroutineContext
 
 
 interface OneInteractionListener {
@@ -25,7 +22,7 @@ interface OneInteractionListener {
     fun onRemove(post: Post)
     fun onShare(post: Post)
     fun onEdit(post: Post)
-    fun startActivity(url: String)
+    fun startActivity(url: String?)
     fun startActivityPostRead(post: Post)
     fun load()
 }
@@ -64,9 +61,19 @@ class PostViewHolder(
             countView.text = numberFormatting.formatting(post.countViews)
             likes.isChecked = post.likedByMe
             val url = "http://10.0.2.2:9999/avatars/${post.authorAvatar}"
-            val urlImages = "http://10.0.2.2:9999/api/slow/images/${post.attachment?.url}"
-            video.load(urlImages,false)
-            avatar.load(url,true)
+            val urlImages = "http://10.0.2.2:9999/media/${post.attachment?.url}"
+            avatar.load(url, true)
+            image.isGone = true
+            if (!post.attachment?.url.isNullOrBlank()) {
+                image.isVisible = if (!post.attachment?.url.isNullOrBlank()) {
+                    image.load(urlImages, false)
+                    true
+                } else {
+                    false
+                }
+            }
+
+            menu.isVisible = post.ownerByMe
         }
 
         likes.setOnClickListener {
@@ -100,26 +107,9 @@ class PostViewHolder(
         }
 
 
-        binding.video.setOnClickListener {
-            if (post.video.isBlank()) {
-                oneInteractionListener.onEdit(post)
-            } else {
-                oneInteractionListener.startActivity(post.video)
-            }
-        }
-        binding.play.setOnClickListener {
-            if (post.video.isBlank()) {
-                oneInteractionListener.onEdit(post)
-            } else {
-                oneInteractionListener.startActivity(post.video)
-            }
-        }
-
-        binding.cardPostGroup.setOnClickListener {
-
-                binding.cardPostGroup.isClickable = false
-
-            oneInteractionListener.startActivityPostRead(post)
+        binding.image.setOnClickListener {
+            val urlImage = post.attachment?.url
+            oneInteractionListener.startActivity(urlImage)
         }
 
         binding.content.setOnClickListener() {

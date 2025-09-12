@@ -18,4 +18,13 @@
     <string name="retry">Повторить</string>
     <string name="empty">empty</string>
     <string name="unknown_error">Unknown error</string>
+    <string name="save">save</string>
+    <string name="description_photo">description_photo</string>
+    <string name="description_select_photo" />
+    <string name="description_take_photo" />
+    <string name="sign_in">Войти</string>
+    <string name="sign_up">Зарегестрироваться</string>
+    <string name="logout">Выйти</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
 </resources>
