@@ -4,10 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 import ru.netology.nmedia.api.ApiService
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.error.ApiError
+import ru.netology.nmedia.error.AppError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
 import ru.netology.nmedia.model.FeedModelState
@@ -20,7 +26,8 @@ class SignInViewModel : ViewModel() {
     val state: LiveData<State>
         get() = _state
 
-    fun signIn(login: String, password: String) {
+    fun signIn(login: String, password: String){
+
         viewModelScope.launch {
             runCatching {
                 val response = ApiService.service.updateUser(login, password)
@@ -29,7 +36,7 @@ class SignInViewModel : ViewModel() {
                     body.id, body.token
                 )
                 _state.value = State()
-
+                //delay(5000)
             }.onFailure {
                 _state.value = State(error = true, errorServer = it.stackTraceToString())
             }

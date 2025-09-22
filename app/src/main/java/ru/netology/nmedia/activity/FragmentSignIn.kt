@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import okhttp3.internal.wait
 import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.SignInViewModel
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textNewPost
@@ -42,8 +43,12 @@ class FragmentSignIn : Fragment() {
             val password = binding.password.text.toString()
 
             if (login.isNotBlank() && password.isNotBlank()) {
-                viewModel.signIn(login, password)
+                val result =  viewModel.signIn(login, password)
+//                if(IsCoroutineRunning(MyCoroutine())) {
+//                    findNavController().navigateUp()
+//                }
             }
+
             if (viewModel.state.value?.error == true) {
                 Toast.makeText(
                     requireContext(),
@@ -51,9 +56,10 @@ class FragmentSignIn : Fragment() {
                     Toast.LENGTH_SHORT
                 )
                     .show()
-            } else {
+            }else {
                 findNavController().navigateUp()
             }
+
         }
         return binding.root
     }

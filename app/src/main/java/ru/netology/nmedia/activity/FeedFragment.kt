@@ -20,6 +20,7 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.FragmentImage.Companion.textImage
 import ru.netology.nmedia.activity.FragmentOpenPost.Companion.textArg
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textNewPost
+import ru.netology.nmedia.activity.NewPostFragment.Companion.textUrl
 import ru.netology.nmedia.adapter.OneInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
@@ -45,7 +46,7 @@ class FeedFragment() : Fragment() {
         val adapter = PostsAdapter(object : OneInteractionListener {
 
             override fun oneLike(post: Post) {
-                viewModel.like(post.id,post.likedByMe)
+                viewModel.like(post.id, post.likedByMe)
             }
 
             override fun onRemove(post: Post) {
@@ -70,15 +71,15 @@ class FeedFragment() : Fragment() {
                     R.id.action_feedFragment_to_newPostFragment,
                     Bundle().apply {
                         textNewPost = post.content
+                        textUrl = post.attachment?.url
                     })
-//                newPostLauncher.launch(post.content)
             }
 
             override fun startActivity(url: String?) {
-              //  val openPage = Intent(Intent.CATEGORY_APP_GALLERY,url)
-             //   startActivity(openPage);
+                //  val openPage = Intent(Intent.CATEGORY_APP_GALLERY,url)
+                //   startActivity(openPage);
                 findNavController().navigate(
-                    R.id.action_feedFragment_to_fragmentImage,Bundle().apply {
+                    R.id.action_feedFragment_to_fragmentImage, Bundle().apply {
                         textImage = url
                     }
                 )
@@ -100,8 +101,8 @@ class FeedFragment() : Fragment() {
         })//создаю адаптер
 
         binding.list.adapter = adapter
-        viewModel.data.observe(viewLifecycleOwner){data ->
-               val newPost = adapter.currentList.size < data.posts.size
+        viewModel.data.observe(viewLifecycleOwner) { data ->
+            val newPost = adapter.currentList.size < data.posts.size
             adapter.submitList(data.posts) {
                 if (newPost) {
                     binding.list.scrollToPosition(0)//скролю вверх если новый пост
@@ -110,22 +111,22 @@ class FeedFragment() : Fragment() {
             binding.empty.isVisible = data.empty
         }
 
-        viewModel.state.observe(viewLifecycleOwner){state ->
+        viewModel.state.observe(viewLifecycleOwner) { state ->
             binding.progress.isVisible = state.loading
-if (state.error) {
-    Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_INDEFINITE)
-        .setAction(R.string.retry) {
-            viewModel.loadPosts()
-        }
-        .show()
-}
+            if (state.error) {
+                Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.retry) {
+                        viewModel.loadPosts()
+                    }
+                    .show()
+            }
             binding.swipeRefreshLayout.isRefreshing = state.refreshing
         }
 
-binding.swipeRefreshLayout.setOnRefreshListener {
-    viewModel.refresh()
-    binding.baselineNorth.isVisible = false
-}
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.refresh()
+            binding.baselineNorth.isVisible = false
+        }
 
         viewModel.newerCount.observe(viewLifecycleOwner) {
             println(it)
@@ -136,7 +137,7 @@ binding.swipeRefreshLayout.setOnRefreshListener {
         }
 
         binding.baselineNorth.setOnClickListener {
-       viewModel.loadDaoNewPost()
+            viewModel.loadDaoNewPost()
             binding.baselineNorth.isVisible = false
         }
 
