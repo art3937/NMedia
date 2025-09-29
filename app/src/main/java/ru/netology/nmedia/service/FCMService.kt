@@ -35,17 +35,27 @@ class FCMService : FirebaseMessagingService() {
 
 
     override fun onMessageReceived(message: RemoteMessage) {
-        val authStateFlow = AppAuth.getInstance().state.value?.id
+        val authStateFlow = AppAuth.getInstance().state.value?.id ?: 0L
 
         val content = Gson().fromJson(
             message.data["content"], PushMessage::class.java
         )
 
-        if (content.recipientId != null && authStateFlow != content.recipientId.toLong()) {
-            AppAuth.getInstance().sendPushToken()
-        } else {
-            contentMessage(content)
+        when (content.recipientId) {
+            null -> contentMessage(content)
+            0L -> if (authStateFlow == 0L) {
+                contentMessage(content)
+            } else {
+                AppAuth.getInstance().sendPushToken()
+            }
+
+            else -> if (authStateFlow == content.recipientId) {
+                contentMessage(content)
+            } else {
+                AppAuth.getInstance().sendPushToken()
+            }
         }
+
 
         message.data["action"]?.let {
             if (it == Action.LIKE.toString() || it == Action.SHARED.toString() || it == Action.ADDED.toString()) {
@@ -164,7 +174,7 @@ enum class Action {
 }
 
 data class PushMessage(
-    val recipientId: String?,
+    val recipientId: Long?,
     val content: String
 )
 
