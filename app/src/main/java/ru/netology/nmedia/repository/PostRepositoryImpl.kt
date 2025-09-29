@@ -100,7 +100,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     override fun getNewer(id: Long): Flow<Int> = flow {
 
         while (true) {
-            delay(1_000)
+            delay(1_000_00)
             val response = ApiService.service.getNewer(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
