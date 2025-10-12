@@ -21,6 +21,8 @@ import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
 import ru.netology.nmedia.PostViewModel
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
+import ru.netology.nmedia.imageLoad.load
+import ru.netology.nmedia.model.PhotoModel
 import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.util.StringArg
 
@@ -80,7 +82,7 @@ class NewPostFragment() : Fragment() {
             }
         }
 
-        binding.takePhoto.setOnClickListener{
+        binding.takePhoto.setOnClickListener {
             ImagePicker.with(this)
                 .crop()
                 .maxResultSize(MAX_SIZE, MAX_SIZE)
@@ -99,16 +101,25 @@ class NewPostFragment() : Fragment() {
         binding.remove.setOnClickListener {
             viewModel.removePhoto()
         }
+//для редактирования подгружаю фото
+        val url = arguments?.textUrl
+        val urlImages = "http://10.0.2.2:9999/media/${url}"
 
-viewModel.photo.observe(viewLifecycleOwner){photo ->
-    if(photo == null){
-        binding.photoContainer.isGone = true
-        return@observe
-    }
+        if (url != null) {
+            binding.photo.load(urlImages, false)
+        }
+/////////////////////////
+        viewModel.photo.observe(viewLifecycleOwner) { photo ->
+            if (photo == null && url == null) {
+                binding.photoContainer.isGone = true
+                return@observe
+            }
 
-    binding.photoContainer.isVisible = true
-    binding.photo.setImageURI(photo.uri)
-}
+            binding.photoContainer.isVisible = true
+            if (photo != null) {
+                binding.photo.setImageURI(photo.uri)
+            }
+        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
@@ -122,9 +133,8 @@ viewModel.photo.observe(viewLifecycleOwner){photo ->
     }
 
 
-
     companion object {
         var Bundle.textNewPost by StringArg
-        var Bundle.text by StringArg
+        var Bundle.textUrl by StringArg
     }
 }
