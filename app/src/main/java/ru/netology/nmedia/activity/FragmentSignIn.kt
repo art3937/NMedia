@@ -1,7 +1,5 @@
 package ru.netology.nmedia.activity
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,20 +7,15 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.viewModelScope
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import okhttp3.internal.wait
-import ru.netology.nmedia.PostViewModel
-import ru.netology.nmedia.SignInViewModel
-import ru.netology.nmedia.activity.NewPostFragment.Companion.textNewPost
-import ru.netology.nmedia.auth.AppAuth
-import ru.netology.nmedia.databinding.FragmentPhotoBinding
+import dagger.hilt.android.AndroidEntryPoint
+import ru.netology.nmedia.viewModels.SignInViewModel
 import ru.netology.nmedia.databinding.FragmentSignInBinding
-import ru.netology.nmedia.imageLoad.load
-import ru.netology.nmedia.util.StringArg
+import java.lang.Thread.sleep
 
+@AndroidEntryPoint
 class FragmentSignIn : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,7 +23,7 @@ class FragmentSignIn : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentSignInBinding.inflate(inflater, container, false)
-        val viewModel: SignInViewModel by viewModels(ownerProducer = ::requireParentFragment)
+        val viewModel: SignInViewModel by viewModels()
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -43,7 +36,8 @@ class FragmentSignIn : Fragment() {
             val password = binding.password.text.toString()
 
             if (login.isNotBlank() && password.isNotBlank()) {
-                val result =  viewModel.signIn(login, password)
+               viewModel.signIn(login, password)
+                sleep(20000)
 //                if(IsCoroutineRunning(MyCoroutine())) {
 //                    findNavController().navigateUp()
 //                }

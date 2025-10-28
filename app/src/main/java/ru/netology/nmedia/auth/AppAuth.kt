@@ -3,6 +3,11 @@ package ru.netology.nmedia.auth
 import android.content.Context
 import androidx.core.content.edit
 import com.google.firebase.messaging.FirebaseMessaging
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,9 +17,14 @@ import kotlinx.coroutines.tasks.await
 import ru.netology.nmedia.api.ApiService
 import ru.netology.nmedia.dto.PushToken
 import ru.netology.nmedia.model.Token
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-class AppAuth private constructor(context: Context) {
+@Singleton
+class AppAuth @Inject constructor(
+    @ApplicationContext
+    private val context: Context
+) {
     private val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
     private val _state = MutableStateFlow<Token?>(null)
     val state = _state.asStateFlow()
@@ -51,10 +61,17 @@ class AppAuth private constructor(context: Context) {
         sendPushToken()
     }
 
+    @InstallIn(SingletonComponent::class)
+    @EntryPoint
+    interface AppAuthEntryPoint{
+        fun getApiService(): ApiService
+    }
+
     fun sendPushToken(token: String? = null) {
         CoroutineScope(Dispatchers.Default).launch {
             try {
-                ApiService.service.sendPushToken(
+                val entryPoint = EntryPointAccessors.fromApplication(context, AppAuthEntryPoint::class.java)
+               entryPoint.getApiService().sendPushToken(
                     PushToken(
                         token = token ?: FirebaseMessaging.getInstance().token.await()
                     )
@@ -69,21 +86,21 @@ class AppAuth private constructor(context: Context) {
     companion object {
         private const val ID_KEY = "ID-KEY"
         private const val TOKEN_KEY = "TOKEN_KEY"
-        private var INSTANCE: AppAuth? = null
+ //       private var INSTANCE: AppAuth? = null
 
-        fun getInstance(): AppAuth = requireNotNull(INSTANCE) {
-            "required initAuth() first"
-        }
-
-        fun initAuth(context: Context): AppAuth {
-            INSTANCE?.let { return it }
-
-            synchronized(this) {
-                INSTANCE?.let { return it }
-                val appAuth = AppAuth(context.applicationContext)
-                INSTANCE = appAuth
-                return appAuth
-            }
-        }
+//        fun getInstance(): AppAuth = requireNotNull(INSTANCE) {
+//            "required initAuth() first"
+//        }
+//
+//        fun initAuth(context: Context): AppAuth {
+//            INSTANCE?.let { return it }
+//
+//            synchronized(this) {
+//                INSTANCE?.let { return it }
+//                val appAuth = AppAuth(context.applicationContext)
+//                INSTANCE = appAuth
+//                return appAuth
+//            }
+//        }
     }
 }
