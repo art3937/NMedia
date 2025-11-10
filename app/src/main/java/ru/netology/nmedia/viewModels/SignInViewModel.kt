@@ -40,7 +40,6 @@ class SignInViewModel @Inject constructor(
                     body.id, body.token
                 )
                 _state.value = State()
-                //delay(5000)
             }.onFailure {
                 _state.value = State(error = true, errorServer = it.stackTraceToString())
             }

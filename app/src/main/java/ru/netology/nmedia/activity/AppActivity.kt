@@ -11,6 +11,7 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,6 +44,9 @@ class AppActivity : AppCompatActivity() {
                     authViewModel.isAuthorized.observe(this@AppActivity){ authorized ->
                         menu.setGroupVisible(R.id.unauthorized, !authorized)
                         menu.setGroupVisible(R.id.authorized, authorized)
+                    }
+                    lifecycleScope.launchWhenCreated {
+
                     }
                 }
 

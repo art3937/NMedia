@@ -82,12 +82,13 @@ class FragmentOpenPost : Fragment() {
             }
 
         }
-        val holder = PostViewHolder(binding.post, oneInteractionListener)
-        val res = arguments?.textArg?.toLong()
-        viewModel.data.observe(viewLifecycleOwner) { feedModel ->
-            val post = feedModel.posts.find { it.id == res } ?: return@observe
-            holder.bind(post)
-        }
+//        val holder = PostViewHolder(binding.post, oneInteractionListener)
+//        val res = arguments?.textArg?.toLong()
+//        viewModel.data.observe(viewLifecycleOwner) { feedModel ->
+//            val post = feedModel.posts.find { it.id == res } ?: return@observe
+//            holder.bind(post)
+//        }
+
 
         return binding.root
     }

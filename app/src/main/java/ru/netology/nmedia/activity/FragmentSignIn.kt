@@ -37,7 +37,6 @@ class FragmentSignIn : Fragment() {
 
             if (login.isNotBlank() && password.isNotBlank()) {
                viewModel.signIn(login, password)
-                sleep(20000)
 //                if(IsCoroutineRunning(MyCoroutine())) {
 //                    findNavController().navigateUp()
 //                }

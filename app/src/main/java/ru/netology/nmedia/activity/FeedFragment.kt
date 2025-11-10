@@ -11,9 +11,12 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import ru.netology.nmedia.viewModels.PostViewModel
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.FragmentImage.Companion.textImage
@@ -100,40 +103,53 @@ class FeedFragment() : Fragment() {
         })//создаю адаптер
 
         binding.list.adapter = adapter
-        viewModel.data.observe(viewLifecycleOwner) { data ->
-            val newPost = adapter.currentList.size < data.posts.size
-            adapter.submitList(data.posts) {
-                if (newPost) {
-                    binding.list.scrollToPosition(0)//скролю вверх если новый пост
-                }
-            }
-            binding.empty.isVisible = data.empty
-        }
 
-        viewModel.state.observe(viewLifecycleOwner) { state ->
-            binding.progress.isVisible = state.loading
-            if (state.error) {
-                Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.retry) {
-                        viewModel.loadPosts()
-                    }
-                    .show()
-            }
-            binding.swipeRefreshLayout.isRefreshing = state.refreshing
+        lifecycleScope.launchWhenCreated{
+            viewModel.data.collectLatest { adapter.submitData(it) }
+
         }
+//        viewModel.data.observe(viewLifecycleOwner) { data ->
+//            val newPost = adapter.currentList.size < data.posts.size
+//            adapter.submitList(data.posts) {
+//                if (newPost) {
+//                    binding.list.scrollToPosition(0)//скролю вверх если новый пост
+//                }
+//            }
+//            binding.empty.isVisible = data.empty
+//        }
+
+//        viewModel.state.observe(viewLifecycleOwner) { state ->
+//            binding.progress.isVisible = state.loading
+//            if (state.error) {
+//                Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_INDEFINITE)
+//                    .setAction(R.string.retry) {
+//                        viewModel.loadPosts()
+//                    }
+//                    .show()
+//            }
+//            binding.swipeRefreshLayout.isRefreshing = state.refreshing
+        //}
+lifecycleScope.launchWhenCreated {
+adapter.loadStateFlow.collectLatest {
+    binding.swipeRefreshLayout.isRefreshing = it.refresh is LoadState.Loading
+            || it.append is LoadState.Loading
+            || it.prepend is LoadState.Loading
+}
+}
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.refresh()
+           // viewModel.refresh()
+            adapter.refresh()
             binding.baselineNorth.isVisible = false
         }
 
-        viewModel.newerCount.observe(viewLifecycleOwner) {
-            println(it)
-            if (it > 0) {
-                binding.baselineNorth.text = "К  ${it}"
-                binding.baselineNorth.isVisible = true
-            }
-        }
+//        viewModel.newerCount.observe(viewLifecycleOwner) {
+//            println(it)
+//            if (it > 0) {
+//                binding.baselineNorth.text = "К  ${it}"
+//                binding.baselineNorth.isVisible = true
+//            }
+//        }
 
         binding.baselineNorth.setOnClickListener {
             viewModel.loadDaoNewPost()
