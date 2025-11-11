@@ -7,35 +7,33 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.ActionBar
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toFile
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
-import ru.netology.nmedia.PostViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import ru.netology.nmedia.viewModels.PostViewModel
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
 import ru.netology.nmedia.imageLoad.load
-import ru.netology.nmedia.model.PhotoModel
 import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.util.StringArg
 
 
 private const val MAX_SIZE = 2040
 
+@AndroidEntryPoint
 class NewPostFragment() : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
+       val viewModel: PostViewModel by viewModels()
         val binding = FragmentNewPostBinding.inflate(inflater, container, false)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())

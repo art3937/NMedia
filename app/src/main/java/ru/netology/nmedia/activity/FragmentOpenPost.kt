@@ -11,7 +11,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import ru.netology.nmedia.PostViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import ru.netology.nmedia.viewModels.PostViewModel
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textNewPost
 import ru.netology.nmedia.adapter.OneInteractionListener
@@ -20,13 +21,14 @@ import ru.netology.nmedia.databinding.FragmentPostBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.util.StringArg
 
+@AndroidEntryPoint
 class FragmentOpenPost : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
+        val viewModel: PostViewModel by viewModels()
         val binding = FragmentPostBinding.inflate(inflater, container, false)
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -80,12 +82,13 @@ class FragmentOpenPost : Fragment() {
             }
 
         }
-        val holder = PostViewHolder(binding.post, oneInteractionListener)
-        val res = arguments?.textArg?.toLong()
-        viewModel.data.observe(viewLifecycleOwner) { feedModel ->
-            val post = feedModel.posts.find { it.id == res } ?: return@observe
-            holder.bind(post)
-        }
+//        val holder = PostViewHolder(binding.post, oneInteractionListener)
+//        val res = arguments?.textArg?.toLong()
+//        viewModel.data.observe(viewLifecycleOwner) { feedModel ->
+//            val post = feedModel.posts.find { it.id == res } ?: return@observe
+//            holder.bind(post)
+//        }
+
 
         return binding.root
     }

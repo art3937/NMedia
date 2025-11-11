@@ -38,5 +38,6 @@
     <string name="logout">Logout</string>
     <string name="login">Login</string>
     <string name="password">password</string>
+    <string name="user_name">name</string>
 
 </resources>

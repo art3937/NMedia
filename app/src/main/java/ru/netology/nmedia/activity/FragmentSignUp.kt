@@ -8,25 +8,24 @@ import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
-import ru.netology.nmedia.viewModels.SignInViewModel
 import ru.netology.nmedia.databinding.FragmentSignInBinding
-import ru.netology.nmedia.viewModels.AuthViewModel
-import java.lang.Thread.sleep
+import ru.netology.nmedia.databinding.FragmentSignUpBinding
+import ru.netology.nmedia.viewModels.SignInViewModel
+import ru.netology.nmedia.viewModels.SignUpViewModel
 
 @AndroidEntryPoint
-class FragmentSignIn : Fragment() {
+class FragmentSignUp : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding = FragmentSignInBinding.inflate(inflater, container, false)
-        val viewModel: SignInViewModel by viewModels()
-        val authViewModel: AuthViewModel by activityViewModels()
+        val binding = FragmentSignUpBinding.inflate(inflater, container, false)
+        val viewModel: SignUpViewModel by viewModels()
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -36,9 +35,10 @@ class FragmentSignIn : Fragment() {
         binding.go.setOnClickListener {
             val login = binding.loginIn.text.toString()
             val password = binding.password.text.toString()
+            val userName = binding.name.textColors.toString()
 
-            if (login.isNotBlank() && password.isNotBlank()) {
-                viewModel.signIn(login, password)
+            if (login.isNotBlank() && password.isNotBlank() && userName.isNotBlank()) {
+                viewModel.signUp(login, password, userName)
             }
 
             if (viewModel.state.value?.error == true) {
@@ -48,11 +48,7 @@ class FragmentSignIn : Fragment() {
                     Toast.LENGTH_SHORT
                 )
                     .show()
-            }
-        }
-
-        authViewModel.isAuthorized.observe(viewLifecycleOwner) {  // <---
-            if (it) {
+            } else {
                 findNavController().navigateUp()
             }
         }
