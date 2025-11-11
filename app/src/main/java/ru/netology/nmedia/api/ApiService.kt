@@ -20,8 +20,8 @@ import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.model.Token
 
 interface ApiService {
-    @GET("posts")
-    suspend fun getAll(): Response<List<Post>>
+//    @GET("posts")
+//    suspend fun getAll(): Response<List<Post>>
 
     @GET("posts/latest")
     suspend fun getLatest( @Query("count") count: Int): Response<List<Post>>
