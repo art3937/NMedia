@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -15,12 +14,9 @@ import ru.netology.nmedia.auth.AppAuth.AppAuthEntryPoint
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.model.State
 import javax.inject.Inject
-import javax.inject.Singleton
-import kotlin.coroutines.coroutineContext
-
 
 @HiltViewModel
-class SignInViewModel @Inject constructor(
+class SignUpViewModel  @Inject constructor(
     @ApplicationContext private val context: Context,
     private val appAuth: AppAuth
 ) : ViewModel() {
@@ -31,11 +27,11 @@ class SignInViewModel @Inject constructor(
     val state: LiveData<State>
         get() = _state
 
-    fun signIn(login: String, password: String) {
+    fun signUp(login: String, password: String, name: String) {
 
         viewModelScope.launch {
             runCatching {
-                val response = entryPoint.getApiService().updateUser(login, password)
+                val response = entryPoint.getApiService().registerUser(login, password,name)
                 val body = response.body() ?: throw ApiError(response.code(), response.message())
                 appAuth.saveAuth(
                     body.id, body.token

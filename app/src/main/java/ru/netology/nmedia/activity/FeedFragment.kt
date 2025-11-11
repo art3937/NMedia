@@ -30,7 +30,7 @@ import ru.netology.nmedia.dto.Post
 
 @AndroidEntryPoint
 class FeedFragment() : Fragment() {
-   val viewModel: PostViewModel by viewModels()
+    val viewModel: PostViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -98,13 +98,11 @@ class FeedFragment() : Fragment() {
             override fun load() {
                 viewModel.loadPosts()
             }
-
-
         })//создаю адаптер
 
         binding.list.adapter = adapter
 
-        lifecycleScope.launchWhenCreated{
+        lifecycleScope.launchWhenCreated {
             viewModel.data.collectLatest { adapter.submitData(it) }
 
         }
@@ -129,16 +127,16 @@ class FeedFragment() : Fragment() {
 //            }
 //            binding.swipeRefreshLayout.isRefreshing = state.refreshing
         //}
-lifecycleScope.launchWhenCreated {
-adapter.loadStateFlow.collectLatest {
-    binding.swipeRefreshLayout.isRefreshing = it.refresh is LoadState.Loading
-            || it.append is LoadState.Loading
-            || it.prepend is LoadState.Loading
-}
-}
+        lifecycleScope.launchWhenCreated {
+            adapter.loadStateFlow.collectLatest {
+                binding.swipeRefreshLayout.isRefreshing = it.refresh is LoadState.Loading
+                        || it.append is LoadState.Loading
+                        || it.prepend is LoadState.Loading
+            }
+        }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-           // viewModel.refresh()
+            // viewModel.refresh()
             adapter.refresh()
             binding.baselineNorth.isVisible = false
         }

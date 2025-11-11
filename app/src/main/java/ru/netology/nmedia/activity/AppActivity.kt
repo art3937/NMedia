@@ -39,9 +39,9 @@ class AppActivity : AppCompatActivity() {
         addMenuProvider(
             object : MenuProvider {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                    menuInflater.inflate(R.menu.auth_menu,menu)
+                    menuInflater.inflate(R.menu.auth_menu, menu)
 
-                    authViewModel.isAuthorized.observe(this@AppActivity){ authorized ->
+                    authViewModel.isAuthorized.observe(this@AppActivity) { authorized ->
                         menu.setGroupVisible(R.id.unauthorized, !authorized)
                         menu.setGroupVisible(R.id.authorized, authorized)
                     }
@@ -51,26 +51,31 @@ class AppActivity : AppCompatActivity() {
                 }
 
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
-                    when(menuItem.itemId){
-                        R.id.signin ->{
+                    when (menuItem.itemId) {
+                        R.id.signin -> {
                             findNavController(binding.root.id).navigate(
-                                R.id.action_feedFragment_to_fragmentSignIn)
+                                R.id.action_feedFragment_to_fragmentSignIn
+                            )
                             true
                         }
 
-                        R.id.signup ->{
+                        R.id.signup -> {
+                            findNavController(binding.root.id).navigate(
+                                R.id.action_feedFragment_to_fragmentSignUp
+                            )
                             true
                         }
 
-                        R.id.logout ->{
+                        R.id.logout -> {
                             appAuth.removeAuth()
                             true
                         }
+
                         else -> false
                     }
             }
         )
-        
+
 
         setContentView(binding.root)
 

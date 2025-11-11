@@ -63,20 +63,21 @@ class AppAuth @Inject constructor(
 
     @InstallIn(SingletonComponent::class)
     @EntryPoint
-    interface AppAuthEntryPoint{
+    interface AppAuthEntryPoint {
         fun getApiService(): ApiService
     }
 
     fun sendPushToken(token: String? = null) {
         CoroutineScope(Dispatchers.Default).launch {
             try {
-                val entryPoint = EntryPointAccessors.fromApplication(context, AppAuthEntryPoint::class.java)
-               entryPoint.getApiService().sendPushToken(
+                val entryPoint =
+                    EntryPointAccessors.fromApplication(context, AppAuthEntryPoint::class.java)
+                entryPoint.getApiService().sendPushToken(
                     PushToken(
                         token = token ?: FirebaseMessaging.getInstance().token.await()
                     )
                 )
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
 
@@ -86,21 +87,5 @@ class AppAuth @Inject constructor(
     companion object {
         private const val ID_KEY = "ID-KEY"
         private const val TOKEN_KEY = "TOKEN_KEY"
- //       private var INSTANCE: AppAuth? = null
-
-//        fun getInstance(): AppAuth = requireNotNull(INSTANCE) {
-//            "required initAuth() first"
-//        }
-//
-//        fun initAuth(context: Context): AppAuth {
-//            INSTANCE?.let { return it }
-//
-//            synchronized(this) {
-//                INSTANCE?.let { return it }
-//                val appAuth = AppAuth(context.applicationContext)
-//                INSTANCE = appAuth
-//                return appAuth
-//            }
-//        }
     }
 }
