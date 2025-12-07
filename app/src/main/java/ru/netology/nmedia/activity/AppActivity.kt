@@ -45,9 +45,6 @@ class AppActivity : AppCompatActivity() {
                         menu.setGroupVisible(R.id.unauthorized, !authorized)
                         menu.setGroupVisible(R.id.authorized, authorized)
                     }
-                    lifecycleScope.launchWhenCreated {
-
-                    }
                 }
 
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean =

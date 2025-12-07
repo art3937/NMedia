@@ -112,14 +112,16 @@ class PostViewModel @Inject constructor(
 
     fun cancel() {
         edited.value = empty
+        _postCreated.value = Unit
     }
 
 
     fun changeContentAndSave(text: String) {
+        _postCreated.value = Unit
         _state.postValue(FeedModelState(loading = true))
         viewModelScope.launch {
             try {
-                edited.value?.let { it ->
+                _postCreated.value =  edited.value?.let { it ->
                     if (it.content != text) {
                         repository.saveById(
                             it.copy(content = text),
@@ -132,7 +134,6 @@ class PostViewModel @Inject constructor(
                 return@launch
             }
         }
-        _postCreated.value = Unit
         edited.postValue(empty)
     }
 

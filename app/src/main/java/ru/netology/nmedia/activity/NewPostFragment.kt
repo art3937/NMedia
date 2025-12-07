@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
@@ -22,6 +23,7 @@ import ru.netology.nmedia.databinding.FragmentNewPostBinding
 import ru.netology.nmedia.imageLoad.load
 import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.util.StringArg
+import ru.netology.nmedia.viewModels.AuthViewModel
 
 
 private const val MAX_SIZE = 2040
@@ -33,6 +35,7 @@ class NewPostFragment() : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val authViewModel: AuthViewModel by activityViewModels()
        val viewModel: PostViewModel by viewModels()
         val binding = FragmentNewPostBinding.inflate(inflater, container, false)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -62,21 +65,24 @@ class NewPostFragment() : Fragment() {
 
         viewModel.postCreated.observe(viewLifecycleOwner) {
             AndroidUtils.hideKeyboard(requireView())
-            findNavController().navigateUp()
+           findNavController().navigateUp()
             viewModel.loadPosts()
         }
 
 
 
         binding.ok.setOnClickListener {
-            findNavController().navigateUp()
             val content = binding.addContent.text.toString()
             if (content.isNotBlank()) {
                 viewModel.changeContentAndSave(content)
-                findNavController().navigateUp()
             } else {
                 Toast.makeText(context, "ничего не заполнено", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
+            }
+            authViewModel.isAuthorized.observe(viewLifecycleOwner) {  // <---
+                if (!it) {
+                    Toast.makeText(context, "не авторизован", Toast.LENGTH_LONG).show()
+                }
             }
         }
 

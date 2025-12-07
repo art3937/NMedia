@@ -11,12 +11,16 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.count
+import kotlinx.coroutines.launch
 import ru.netology.nmedia.viewModels.PostViewModel
 import ru.netology.nmedia.R
 import ru.netology.nmedia.activity.FragmentImage.Companion.textImage
@@ -27,6 +31,7 @@ import ru.netology.nmedia.adapter.OneInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.util.AndroidUtils
 
 @AndroidEntryPoint
 class FeedFragment() : Fragment() {
@@ -102,52 +107,33 @@ class FeedFragment() : Fragment() {
 
         binding.list.adapter = adapter
 
-        lifecycleScope.launchWhenCreated {
-            viewModel.data.collectLatest { adapter.submitData(it) }
-
-        }
-//        viewModel.data.observe(viewLifecycleOwner) { data ->
-//            val newPost = adapter.currentList.size < data.posts.size
-//            adapter.submitList(data.posts) {
-//                if (newPost) {
-//                    binding.list.scrollToPosition(0)//скролю вверх если новый пост
-//                }
-//            }
-//            binding.empty.isVisible = data.empty
+//        lifecycleScope.launchWhenCreated {
+//            viewModel.data.collectLatest { adapter.submitData(it) }
+//
 //        }
 
-//        viewModel.state.observe(viewLifecycleOwner) { state ->
-//            binding.progress.isVisible = state.loading
-//            if (state.error) {
-//                Snackbar.make(binding.root, R.string.unknown_error, Snackbar.LENGTH_INDEFINITE)
-//                    .setAction(R.string.retry) {
-//                        viewModel.loadPosts()
-//                    }
-//                    .show()
-//            }
-//            binding.swipeRefreshLayout.isRefreshing = state.refreshing
-        //}
-        lifecycleScope.launchWhenCreated {
-            adapter.loadStateFlow.collectLatest {
-                binding.swipeRefreshLayout.isRefreshing = it.refresh is LoadState.Loading
-                        || it.append is LoadState.Loading
-                        || it.prepend is LoadState.Loading
+viewModel.postCreated.observe(viewLifecycleOwner){
+binding.list.scrollToPosition(0)
+}
+        // Актуальный вариант
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                adapter.loadStateFlow.collectLatest { state ->
+                    binding.swipeRefreshLayout.isRefreshing =
+                        state.refresh is LoadState.Loading ||
+                                state.prepend is LoadState.Loading ||
+                                state.append is LoadState.Loading
+                }
             }
         }
 
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            // viewModel.refresh()
-            adapter.refresh()
-            binding.baselineNorth.isVisible = false
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.data.collectLatest(adapter::submitData)
+            }
         }
 
-//        viewModel.newerCount.observe(viewLifecycleOwner) {
-//            println(it)
-//            if (it > 0) {
-//                binding.baselineNorth.text = "К  ${it}"
-//                binding.baselineNorth.isVisible = true
-//            }
-//        }
+        binding.swipeRefreshLayout.setOnRefreshListener(adapter::refresh)
 
         binding.baselineNorth.setOnClickListener {
             viewModel.loadDaoNewPost()

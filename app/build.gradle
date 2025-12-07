@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace 'ru.netology.nmedia'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         applicationId "ru.netology.nmedia"
-        minSdk 21
-        targetSdk 35
+        minSdk 23
+        targetSdk 36
         versionCode 1
         versionName "1.0"
 
@@ -65,7 +65,7 @@ dependencies {
     def lifecycle_version = "2.8.7"
     def gson_version = "2.13.0"
     def nav_version = "2.8.9"
-    def room_version = "2.7.0"
+    def room_version = "2.8.3"
     def firebase_version = "33.13.0"
     def play_services_base_version = "17.0.0"
     def glide_version = "4.16.0"
@@ -113,6 +113,7 @@ dependencies {
     kaptTest 'com.google.dagger:hilt-compiler:2.57.2'
 
     implementation "androidx.paging:paging-runtime-ktx:3.3.6"
+    implementation "androidx.room:room-paging:$room_version"
 }
 
 kapt {
