@@ -1,5 +1,7 @@
 package ru.netology.nmedia.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -21,35 +23,43 @@ import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
 import java.io.File
 import java.io.IOException
+import javax.inject.Inject
 
 
-class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
+class PostRepositoryImpl @Inject constructor(
+    private val dao: PostDao,
+    private val apiService: ApiService
+) : PostRepository {
     private var newPosts: List<Post> = emptyList()
-    override val data = dao.getAll().map { it.map { it.toDto() } }
+    override val data = Pager(config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+        pagingSourceFactory = {
+            PostPagingSource(apiService)
+        }
+    ).flow
 
     override suspend fun getAllAsync() {
-        try {
-            val response = ApiService.service.getAll()
-            if (!response.isSuccessful) {
-                throw ApiError(response.code(), response.message())
-            }
-
-            val body = response.body() ?: throw ApiError(response.code(), response.message())
-            dao.insert(body.fromDtoToEntity())
-        } catch (e: IOException) {
-            throw NetworkError
-        } catch (e: Exception) {
-            throw UnknownError
-        }
+//        try {
+//            val response = apiService.getAll()
+//            if (!response.isSuccessful) {
+//                throw ApiError(response.code(), response.message())
+//            }
+//
+//            val body = response.body() ?: throw ApiError(response.code(), response.message())
+//            dao.insert(body.fromDtoToEntity())
+//        } catch (e: IOException) {
+//            throw NetworkError
+//        } catch (e: Exception) {
+//            throw UnknownError
+//        }
     }
 
     override suspend fun likeById(id: Long, like: Boolean) {
         dao.likeById(id)
         try {
             if (!like) {
-                ApiService.service.likeById(id).toDto()
+                apiService.likeById(id).toDto()
             } else {
-                ApiService.service.unLikeById(id).toDto()
+              apiService.unLikeById(id).toDto()
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -63,7 +73,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
     override suspend fun removeById(id: Long) {
         dao.removeById(id)
-        ApiService.service.deleteById(id)
+        apiService.deleteById(id)
 
     }
 
@@ -76,7 +86,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
             )
         } ?: post
 
-        val response = ApiService.service.save(PostEntity.fromDto(postWithAttachment))
+        val response = apiService.save(PostEntity.fromDto(postWithAttachment))
         if (!response.isSuccessful) {
             throw ApiError(response.code(), response.message())
         }
@@ -88,7 +98,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
     }
 
     private suspend fun saveMedia(file: File): Media =
-        ApiService.service.uploadFile(
+        apiService.uploadFile(
             MultipartBody.Part.createFormData(
                 "file",
                 file.name,
@@ -101,7 +111,7 @@ class PostRepositoryImpl(private val dao: PostDao) : PostRepository {
 
         while (true) {
             delay(1_000_00)
-            val response = ApiService.service.getNewer(id)
+            val response = apiService.getNewer(id)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }

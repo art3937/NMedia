@@ -27,4 +27,5 @@
     <string name="logout">Выйти</string>
     <string name="login">Логин</string>
     <string name="password">Пароль</string>
+    <string name="user_name">имя</string>
 </resources>

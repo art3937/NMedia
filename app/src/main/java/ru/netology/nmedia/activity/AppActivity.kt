@@ -8,59 +8,74 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import ru.netology.nmedia.AuthViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import ru.netology.nmedia.viewModels.AuthViewModel
 import ru.netology.nmedia.R
-import ru.netology.nmedia.SignInViewModel
 import ru.netology.nmedia.activity.NewPostFragment.Companion.textNewPost
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.ActivityAppBinding
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AppActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var appAuth: AppAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestNotificationsPermission()
         val binding = ActivityAppBinding.inflate(layoutInflater)
-        val authViewModel by viewModels<AuthViewModel>()
-        
+
+
+        val authViewModel: AuthViewModel by viewModels()
+
         addMenuProvider(
             object : MenuProvider {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                    menuInflater.inflate(R.menu.auth_menu,menu)
+                    menuInflater.inflate(R.menu.auth_menu, menu)
 
-                    authViewModel.isAuthorized.observe(this@AppActivity){ authorized ->
+                    authViewModel.isAuthorized.observe(this@AppActivity) { authorized ->
                         menu.setGroupVisible(R.id.unauthorized, !authorized)
                         menu.setGroupVisible(R.id.authorized, authorized)
+                    }
+                    lifecycleScope.launchWhenCreated {
+
                     }
                 }
 
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
-                    when(menuItem.itemId){
-                        R.id.signin ->{
+                    when (menuItem.itemId) {
+                        R.id.signin -> {
                             findNavController(binding.root.id).navigate(
-                                R.id.action_feedFragment_to_fragmentSignIn)
+                                R.id.action_feedFragment_to_fragmentSignIn
+                            )
                             true
                         }
 
-                        R.id.signup ->{
+                        R.id.signup -> {
+                            findNavController(binding.root.id).navigate(
+                                R.id.action_feedFragment_to_fragmentSignUp
+                            )
                             true
                         }
 
-                        R.id.logout ->{
-                            AppAuth.getInstance().removeAuth()
+                        R.id.logout -> {
+                            appAuth.removeAuth()
                             true
                         }
+
                         else -> false
                     }
             }
         )
-        
+
 
         setContentView(binding.root)
 
